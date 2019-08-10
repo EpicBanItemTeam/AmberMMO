@@ -1,0 +1,42 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+    id 'scala'
+    id "com.github.johnrengelman.shadow" version "5.1.0"
+}
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'bstats-repo'
+        url = 'http://repo.bstats.org/content/repositories/releases'
+    }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:7.1.0'
+    compile 'com.github.IzzelAliz:AmberCommon:master-SNAPSHOT'
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.8'
+}
+
+sponge.plugin.id = pluginId
+
+defaultTasks 'clean', 'build', 'shadowJar'
+
+shadowJar {
+    minimize()
+    dependencies {
+        it.include it.dependency('org.scala-lang:.*')
+        it.include it.dependency('com.github.IzzelAliz:.*')
+    }
+    relocate 'scala', 'io.izzel.amber.mmo.internal.scala'
+}
