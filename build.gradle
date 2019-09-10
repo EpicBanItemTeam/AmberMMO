@@ -1,14 +1,13 @@
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
-    id 'scala'
+    id 'java'
     id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 configurations {
     group = pluginGroup
     version = pluginVersion
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = targetCompatibility = '1.8'
     sponge.plugin.id = pluginId
     defaultTasks 'clean', 'build', 'shadowJar'
 }
@@ -30,14 +29,11 @@ dependencies {
         exclude group: 'org.spongepowered'
     }
     compile 'org.spongepowered:spongeapi:7.2.0-SNAPSHOT'
-    compile group: 'org.scala-lang', name: 'scala-library', version: '2.13.0'
 }
 
 shadowJar {
     minimize()
     dependencies {
-        it.include it.dependency('org.scala-lang:.*')
         it.include it.dependency('com.github.IzzelAliz:.*')
     }
-    relocate 'scala', 'io.izzel.amber.mmo.internal.scala'
 }
