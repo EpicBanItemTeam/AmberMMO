@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.profession.storage;
 
+import com.google.common.base.MoreObjects;
 import io.izzel.amber.mmo.profession.Profession;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -37,5 +38,15 @@ public class StoredProfession implements Profession {
 
     void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("name", name)
+            .add("tags", tags)
+            .add("description", description)
+            .toString();
     }
 }

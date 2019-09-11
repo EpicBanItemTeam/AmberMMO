@@ -10,6 +10,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.config.ConfigDir;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class ProfessionStorage {
     public void load() {
         try {
             Path resolve = dir.resolve("professions.conf");
+            if (!Files.isDirectory(dir)) Files.createDirectories(dir);
+            if (!Files.exists(resolve)) Files.createFile(resolve);
             HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(resolve).build();
             CommentedConfigurationNode load = loader.load();
             if (load.getValueType() == ValueType.MAP) {
