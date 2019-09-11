@@ -2,8 +2,10 @@ package io.izzel.amber.mmo.profession;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.izzel.amber.mmo.profession.data.EntityProfessionData;
 import io.izzel.amber.mmo.profession.data.MutableProfession;
+import io.izzel.amber.mmo.profession.storage.ProfessionStorage;
 import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.EventManager;
@@ -15,10 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Singleton
 final class ProfessionServiceImpl implements ProfessionService {
 
+    private final ProfessionStorage storage;
+
     @Inject
-    public ProfessionServiceImpl(PluginContainer container, ServiceManager serviceManager, EventManager eventManager) {
+    public ProfessionServiceImpl(PluginContainer container, ServiceManager serviceManager, EventManager eventManager, ProfessionStorage storage) {
+        this.storage = storage;
         serviceManager.setProvider(container, ProfessionService.class, this);
         eventManager.registerListener(container, GameInitializationEvent.class, event -> {
             DataRegistration.builder()
@@ -28,6 +34,7 @@ final class ProfessionServiceImpl implements ProfessionService {
                 .id("ambermmo_prof")
                 .name("AmberMMO Profession Data")
                 .build();
+            storage.load();
         });
     }
 
@@ -47,13 +54,12 @@ final class ProfessionServiceImpl implements ProfessionService {
 
     @Override
     public List<Profession> listAll() {
-        // todo 实现关于职业的存储
-        return ImmutableList.of();
+        return ImmutableList.copyOf(storage.getLoaded().values());
     }
 
     @Override
     public Optional<Profession> getById(String id) {
-        return Optional.empty();
+        return Optional.ofNullable(storage.getLoaded().get(id));
     }
 
 }
