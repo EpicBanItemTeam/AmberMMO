@@ -17,7 +17,7 @@ public class StoredProfession implements Profession {
     private String id;
 
     @Override
-    public String id() {
+    public String getId() {
         return id;
     }
 

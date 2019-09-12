@@ -38,8 +38,8 @@ final class WrappedProfessionSubject implements ProfessionSubject {
     }
 
     @Override
-    public String id() {
-        return profession.id();
+    public String getId() {
+        return profession.getId();
     }
 
     @Override

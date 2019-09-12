@@ -1,16 +1,9 @@
 package io.izzel.amber.mmo.profession;
 
+import io.izzel.amber.mmo.util.Displayed;
+import io.izzel.amber.mmo.util.Identified;
 import io.izzel.amber.mmo.util.Tagged;
-import org.spongepowered.api.text.Text;
 
-import java.util.List;
-
-public interface Profession extends Tagged {
-
-    String id();
-
-    Text getName();
-
-    List<Text> getDescription();
+public interface Profession extends Tagged, Identified, Displayed {
 
 }
