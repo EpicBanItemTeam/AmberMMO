@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import io.izzel.amber.mmo.profession.data.EntityProfessionData;
 import io.izzel.amber.mmo.profession.data.MutableProfession;
 import io.izzel.amber.mmo.profession.storage.ProfessionStorage;
+import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.EventManager;
@@ -23,7 +24,8 @@ final class ProfessionServiceImpl implements ProfessionService {
     private final ProfessionStorage storage;
 
     @Inject
-    public ProfessionServiceImpl(PluginContainer container, ServiceManager serviceManager, EventManager eventManager, ProfessionStorage storage) {
+    public ProfessionServiceImpl(PluginContainer container, ServiceManager serviceManager, EventManager eventManager,
+                                 DataManager dataManager, ProfessionStorage storage) {
         this.storage = storage;
         serviceManager.setProvider(container, ProfessionService.class, this);
         eventManager.registerListener(container, GameInitializationEvent.class, event -> {
@@ -34,6 +36,7 @@ final class ProfessionServiceImpl implements ProfessionService {
                 .id("ambermmo_prof")
                 .name("AmberMMO Profession Data")
                 .build();
+            dataManager.registerBuilder(MutableProfession.class, new MutableProfession.Builder());
             storage.load();
         });
     }

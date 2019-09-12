@@ -1,10 +1,11 @@
 package io.izzel.amber.mmo.profession.data;
 
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.data.DataSerializable;
-import org.spongepowered.api.data.Queries;
+import org.spongepowered.api.data.*;
+import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import java.util.Optional;
 
 @NonnullByDefault
 public class MutableProfession implements DataSerializable {
@@ -52,6 +53,22 @@ public class MutableProfession implements DataSerializable {
             .set(EXPERIENCE, experience)
             .set(SKILL_TREE, skillTree)
             .set(Queries.CONTENT_VERSION, this.getContentVersion());
+    }
+
+    public static class Builder extends AbstractDataBuilder<MutableProfession> {
+
+        public Builder() {
+            super(MutableProfession.class, 0);
+        }
+
+        @Override
+        protected Optional<MutableProfession> buildContent(DataView container) throws InvalidDataException {
+            String id = container.getString(ID).orElseThrow(InvalidDataException::new);
+            double exp = container.getDouble(EXPERIENCE).orElseThrow(InvalidDataException::new);
+            // todo add skill tree implementation class
+            DataSerializable st = container.getSerializable(SKILL_TREE, DataSerializable.class).orElseThrow(InvalidDataException::new);
+            return Optional.of(new MutableProfession(id, st, exp));
+        }
     }
 
 }
