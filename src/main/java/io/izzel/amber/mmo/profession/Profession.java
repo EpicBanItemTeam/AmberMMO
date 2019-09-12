@@ -1,18 +1,13 @@
 package io.izzel.amber.mmo.profession;
 
+import io.izzel.amber.mmo.util.Tagged;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
 
-public interface Profession {
+public interface Profession extends Tagged {
 
     String id();
-
-    List<String> getTags();
-
-    default boolean hasTag(String tagName) {
-        return getTags().contains(tagName);
-    }
 
     Text getName();
 
