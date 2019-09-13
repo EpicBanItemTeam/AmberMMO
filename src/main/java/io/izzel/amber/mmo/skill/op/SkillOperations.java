@@ -8,4 +8,8 @@ public class SkillOperations {
     public static OperationTargetCast targetCast(Entity source, Entity... targets) {
         return new OperationTargetCast(source, ImmutableList.copyOf(targets));
     }
+
+    public static OperationCancel cancel(Entity source) {
+        return new OperationCancel(source);
+    }
 }
