@@ -1,7 +1,6 @@
 package io.izzel.amber.mmo.skill;
 
 import io.izzel.amber.mmo.skill.data.EntitySkill;
-import io.izzel.amber.mmo.util.Reflections;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public interface SkillSubject {
 
     @SuppressWarnings("unchecked")
     default <T extends EntitySkill> Optional<CastingSkill<T>> find(Class<T> cl) {
-        return Reflections.resolveCasting(cl).flatMap(it -> (Optional) getCastingSkills().stream().filter(it::isInstance).findAny());
+        return getCastingSkills(cl).stream().findAny();
     }
 
     interface CastOperator {
