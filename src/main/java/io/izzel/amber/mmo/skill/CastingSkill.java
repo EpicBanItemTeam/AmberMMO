@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.skill;
 
 import io.izzel.amber.mmo.skill.data.EntitySkill;
+import io.izzel.amber.mmo.skill.op.SkillOperation;
 import lombok.Getter;
 
 /**

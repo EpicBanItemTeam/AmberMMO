@@ -1,7 +1,6 @@
 package io.izzel.amber.mmo.skill.op;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
-import io.izzel.amber.mmo.skill.SkillOperation;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;

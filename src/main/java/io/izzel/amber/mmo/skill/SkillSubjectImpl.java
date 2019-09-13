@@ -7,6 +7,7 @@ import io.izzel.amber.mmo.profession.ProfessionService;
 import io.izzel.amber.mmo.profession.ProfessionSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.data.SkillTree;
+import io.izzel.amber.mmo.skill.op.SkillOperation;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
