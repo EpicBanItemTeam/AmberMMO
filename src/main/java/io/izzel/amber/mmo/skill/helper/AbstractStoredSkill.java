@@ -1,5 +1,6 @@
-package io.izzel.amber.mmo.skill.storage;
+package io.izzel.amber.mmo.skill.helper;
 
+import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;

@@ -8,8 +8,11 @@ import lombok.Getter;
  */
 public abstract class CastingSkill<E extends EntitySkill> {
 
-    @Getter private final E owning;
-    @Getter private final SkillSubject subject;
+    @Getter protected E owning;
+    @Getter protected SkillSubject subject;
+
+    protected CastingSkill() {
+    }
 
     public CastingSkill(E owning, SkillSubject subject) {
         this.owning = owning;

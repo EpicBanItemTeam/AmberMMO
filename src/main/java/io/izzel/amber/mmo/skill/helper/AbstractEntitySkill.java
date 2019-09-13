@@ -1,8 +1,9 @@
-package io.izzel.amber.mmo.skill.data;
+package io.izzel.amber.mmo.skill.helper;
 
 import com.google.common.collect.ImmutableList;
 import io.izzel.amber.mmo.skill.CastingSkill;
 import io.izzel.amber.mmo.skill.SkillService;
+import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -11,24 +12,24 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import javax.annotation.Nullable;
+import java.util.*;
 
 @NonnullByDefault
 public abstract class AbstractEntitySkill<S extends StoredSkill, C extends CastingSkill> implements EntitySkill<S, C> {
 
     static final DataQuery ID = DataQuery.of("Id");
     static final DataQuery PROP = DataQuery.of("Properties");
-    private final Map<String, Object> props = new LinkedHashMap<>();
-    private final String id;
+    final Map<String, Object> props = new LinkedHashMap<>();
+    @Nullable protected String id;
 
     @SuppressWarnings("unchecked")
-    protected AbstractEntitySkill(Object obj) {
-        Tuple<String, Map<String, Object>> tuple = (Tuple<String, Map<String, Object>>) obj;
-        this.id = tuple.getFirst();
-        props.putAll(tuple.getSecond());
+    protected AbstractEntitySkill(@Nullable Object obj) {
+        if (obj != null) {
+            Tuple<String, Map<String, Object>> tuple = (Tuple<String, Map<String, Object>>) obj;
+            this.id = tuple.getFirst();
+            props.putAll(tuple.getSecond());
+        }
     }
 
     @Override
@@ -57,7 +58,7 @@ public abstract class AbstractEntitySkill<S extends StoredSkill, C extends Casti
     public DataContainer toContainer() {
         DataContainer container = DataContainer.createNew()
             .set(Queries.CONTENT_VERSION, getContentVersion())
-            .set(ID, id);
+            .set(ID, Objects.requireNonNull(id));
         for (Map.Entry<String, Object> entry : props.entrySet()) {
             DataQuery query = PROP.then(entry.getKey());
             container.set(query.then("Type"), entry.getValue().getClass().getName());
