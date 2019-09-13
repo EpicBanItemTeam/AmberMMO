@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.profession;
 
 import com.google.inject.ImplementedBy;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 
 import java.util.List;
@@ -14,5 +15,9 @@ public interface ProfessionService {
     List<Profession> listAll();
 
     Optional<Profession> getById(String id);
+
+    static ProfessionService instance() {
+        return Sponge.getServiceManager().provideUnchecked(ProfessionService.class);
+    }
 
 }

@@ -1,7 +1,7 @@
 package io.izzel.amber.mmo.profession;
 
 import io.izzel.amber.mmo.profession.data.MutableProfession;
-import org.spongepowered.api.data.DataSerializable;
+import io.izzel.amber.mmo.skill.data.SkillTree;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
@@ -16,10 +16,9 @@ final class WrappedProfessionSubject implements ProfessionSubject {
         this.mutableProfession = mutableProfession;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends DataSerializable> T getSkillTree() {
-        return ((T) mutableProfession.getSkillTree());
+    public SkillTree getSkillTree() {
+        return mutableProfession.getSkillTree();
     }
 
     @Override

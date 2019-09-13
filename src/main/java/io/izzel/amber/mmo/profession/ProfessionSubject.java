@@ -1,10 +1,10 @@
 package io.izzel.amber.mmo.profession;
 
-import org.spongepowered.api.data.DataSerializable;
+import io.izzel.amber.mmo.skill.data.SkillTree;
 
 public interface ProfessionSubject extends Profession {
 
-    <T extends DataSerializable> T getSkillTree();
+    SkillTree getSkillTree();
 
     double getExperience();
 

@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.profession.data;
 
+import io.izzel.amber.mmo.skill.data.SkillTree;
 import org.spongepowered.api.data.*;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
@@ -14,12 +15,11 @@ public class MutableProfession implements DataSerializable {
     private static final DataQuery EXPERIENCE = DataQuery.of("Experience");
     private static final DataQuery SKILL_TREE = DataQuery.of("SkillTree");
 
-    // todo add skill tree implementation
     private final String id;
-    private DataSerializable skillTree;
+    private SkillTree skillTree;
     private double experience;
 
-    public MutableProfession(String id, DataSerializable skillTree, double experience) {
+    public MutableProfession(String id, SkillTree skillTree, double experience) {
         this.id = id;
         this.skillTree = skillTree;
         this.experience = experience;
@@ -33,7 +33,7 @@ public class MutableProfession implements DataSerializable {
         this.experience = experience;
     }
 
-    public DataSerializable getSkillTree() {
+    public SkillTree getSkillTree() {
         return skillTree;
     }
 
@@ -65,8 +65,7 @@ public class MutableProfession implements DataSerializable {
         protected Optional<MutableProfession> buildContent(DataView container) throws InvalidDataException {
             String id = container.getString(ID).orElseThrow(InvalidDataException::new);
             double exp = container.getDouble(EXPERIENCE).orElseThrow(InvalidDataException::new);
-            // todo add skill tree implementation class
-            DataSerializable st = container.getSerializable(SKILL_TREE, DataSerializable.class).orElseThrow(InvalidDataException::new);
+            SkillTree st = container.getSerializable(SKILL_TREE, SkillTree.class).orElse(SkillTree.empty());
             return Optional.of(new MutableProfession(id, st, exp));
         }
     }
