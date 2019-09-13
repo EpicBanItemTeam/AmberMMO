@@ -11,7 +11,7 @@ public final class Reflections {
     public static Optional<Class<?>> resolveCasting(Class<?> entitySkillCl) {
         for (Type type : entitySkillCl.getGenericInterfaces()) {
             if (type.equals(EntitySkill.class) && type instanceof ParameterizedType) {
-                Type argument = ((ParameterizedType) type).getActualTypeArguments()[0];
+                Type argument = ((ParameterizedType) type).getActualTypeArguments()[1];
                 if (argument instanceof Class) return Optional.of(((Class<?>) argument));
             }
         }
