@@ -7,7 +7,6 @@ import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.Queries;
-import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @NonnullByDefault
-public abstract class AbstractEntitySkill<S extends StoredSkill, C extends CastingSkill, B extends AbstractDataBuilder<?>> implements EntitySkill<S, C, B> {
+public abstract class AbstractEntitySkill<S extends StoredSkill, C extends CastingSkill> implements EntitySkill<S, C> {
 
     static final DataQuery ID = DataQuery.of("Id");
     static final DataQuery PROP = DataQuery.of("Properties");

@@ -8,7 +8,6 @@ import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -25,23 +24,14 @@ public class SkillRegistryEventImpl implements SkillEvent.Registry {
         this.map = map;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends EntitySkill<?, ?, ?>> void registerSkill(Class<T> cl, String typeId) {
+    public <T extends EntitySkill<?, ?>> void registerSkill(String typeId, Class<T> cl, AbstractDataBuilder<T> builder) {
         for (Type type : cl.getGenericInterfaces()) {
             if (type.equals(EntitySkill.class) && type instanceof ParameterizedType) {
                 Type argument = ((ParameterizedType) type).getActualTypeArguments()[0];
-                Type arg2 = ((ParameterizedType) type).getActualTypeArguments()[2];
-                if (argument instanceof Class && StoredSkill.class.isAssignableFrom(((Class) argument))
-                    && arg2 instanceof Class && AbstractDataBuilder.class.isAssignableFrom(((Class) arg2))) {
+                if (argument instanceof Class && StoredSkill.class.isAssignableFrom(((Class) argument))) {
                     map.put(typeId, ((Class) argument));
-                    try {
-                        Constructor constructor = ((Class) arg2).getDeclaredConstructor();
-                        constructor.setAccessible(true);
-                        dataManager.registerBuilder(cl, ((AbstractDataBuilder) constructor.newInstance()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    dataManager.registerBuilder(cl, builder);
                 }
             }
         }

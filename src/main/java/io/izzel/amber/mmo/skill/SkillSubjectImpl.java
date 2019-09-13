@@ -19,7 +19,7 @@ final class SkillSubjectImpl implements SkillSubject {
 
     private WeakReference<Entity> entityWf;
     private final UUID owner;
-    private final SetMultimap<Class<EntitySkill<?, ?, ?>>, CastingSkill<?>> multimap = MultimapBuilder.hashKeys().linkedHashSetValues().build();
+    private final SetMultimap<Class<EntitySkill<?, ?>>, CastingSkill<?>> multimap = MultimapBuilder.hashKeys().linkedHashSetValues().build();
     private final Operator operator = new Operator();
 
     public SkillSubjectImpl(Entity entity) {
@@ -34,12 +34,12 @@ final class SkillSubjectImpl implements SkillSubject {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>> Collection<C> getCastingSkills(Class<E> cl) {
+    public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> Collection<C> getCastingSkills(Class<E> cl) {
         return Collections.unmodifiableCollection(Optional.ofNullable(multimap.get((Class) cl)).orElse(ImmutableSet.of()));
     }
 
     @Override
-    public <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>> Optional<C> operate(Class<E> cl, SkillOperation<? super C> operation) throws UnsupportedOperationException {
+    public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> Optional<C> operate(Class<E> cl, SkillOperation<? super C> operation) throws UnsupportedOperationException {
         Optional<Entity> entity = get();
         if (entity.isPresent()) {
             if (multimap.containsKey(cl)) {
@@ -63,7 +63,7 @@ final class SkillSubjectImpl implements SkillSubject {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>> C operate(C skill, SkillOperation<? super C> operation) {
+    public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> C operate(C skill, SkillOperation<? super C> operation) {
         multimap.put((Class) skill.getOwning().getClass(), skill);
         skill.perform(operation, operator);
         return skill;

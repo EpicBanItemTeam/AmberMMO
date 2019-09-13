@@ -12,13 +12,13 @@ public interface SkillSubject {
 
     Collection<CastingSkill<?>> getCastingSkills();
 
-    <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>>
+    <C extends CastingSkill<E>, E extends EntitySkill<?, C>>
     Collection<C> getCastingSkills(Class<E> cl);
 
-    <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>>
+    <C extends CastingSkill<E>, E extends EntitySkill<?, C>>
     Optional<C> operate(Class<E> cl, SkillOperation<? super C> operation);
 
-    <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>>
+    <C extends CastingSkill<E>, E extends EntitySkill<?, C>>
     C operate(C skill, SkillOperation<? super C> operation);
 
     boolean isValid();

@@ -5,7 +5,6 @@ import io.izzel.amber.mmo.skill.SkillSubject;
 import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import io.izzel.amber.mmo.util.Identified;
 import org.spongepowered.api.data.DataSerializable;
-import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
@@ -16,9 +15,8 @@ import java.util.Optional;
  *
  * @param <S> 存储类
  * @param <C> 执行类
- * @param <B> Builder 类，须保留一个无参构造器
  */
-public interface EntitySkill<S extends StoredSkill, C extends CastingSkill, B extends AbstractDataBuilder<?>> extends DataSerializable, Identified {
+public interface EntitySkill<S extends StoredSkill, C extends CastingSkill> extends DataSerializable, Identified {
 
     C createCast(SkillSubject subject);
 
