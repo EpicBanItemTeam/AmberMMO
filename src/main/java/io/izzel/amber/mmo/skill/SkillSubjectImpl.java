@@ -7,7 +7,6 @@ import io.izzel.amber.mmo.profession.ProfessionService;
 import io.izzel.amber.mmo.profession.ProfessionSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.data.SkillTree;
-import io.izzel.amber.mmo.util.Reflections;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -39,17 +38,15 @@ final class SkillSubjectImpl implements SkillSubject {
         return Collections.unmodifiableCollection(Optional.ofNullable(multimap.get((Class) cl)).orElse(ImmutableSet.of()));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <C extends CastingSkill<E>, E extends EntitySkill<?, C, ?>> Optional<C> operate(Class<E> cl, SkillOperation<? super C> operation) throws UnsupportedOperationException {
         Optional<Entity> entity = get();
         if (entity.isPresent()) {
-            Optional<Class<?>> resolved = Reflections.resolveCasting(cl);
-            if (resolved.isPresent() && multimap.containsKey(cl)) {
-                Set<CastingSkill<?>> castingSkills = multimap.get((Class) cl);
+            if (multimap.containsKey(cl)) {
+                Collection<C> castingSkills = getCastingSkills(cl);
                 if (castingSkills.size() > 0) {
-                    CastingSkill<?> skill = castingSkills.iterator().next();
-                    return Optional.of(operate((C) skill, operation));
+                    C skill = castingSkills.iterator().next();
+                    return Optional.of(operate(skill, operation));
                 }
             }
             List<ProfessionSubject> professions = ProfessionService.instance().getProfessions(entity.get());
