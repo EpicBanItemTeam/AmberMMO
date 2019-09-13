@@ -49,7 +49,9 @@ public class SkillStorage {
                 if (children.containsKey("type")) {
                     String type = children.get("type").getString();
                     if (types.containsKey(type)) {
-                        Object skill = children.get("skill").getValue(TypeToken.of(types.get(type)));
+                        CommentedConfigurationNode skillNode = children.get("skill");
+                        skillNode.getNode("id").setValue(key);
+                        Object skill = skillNode.getValue(TypeToken.of(types.get(type)));
                         this.map.put(key, ((StoredSkill) skill));
                     } else {
                         locale.log("unknown-type", type, key);

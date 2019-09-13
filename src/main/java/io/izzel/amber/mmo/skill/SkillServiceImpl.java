@@ -39,9 +39,10 @@ final class SkillServiceImpl implements SkillService {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Optional<StoredSkill> getStored(String id) {
-        return Optional.ofNullable(this.storage.get(id));
+    public <S extends StoredSkill> Optional<S> getStored(String id) {
+        return Optional.ofNullable((S) this.storage.get(id));
     }
 
     @Override

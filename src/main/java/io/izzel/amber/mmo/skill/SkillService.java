@@ -10,7 +10,7 @@ import java.util.Optional;
 @ImplementedBy(SkillServiceImpl.class)
 public interface SkillService {
 
-    Optional<StoredSkill> getStored(String id);
+    <S extends StoredSkill> Optional<S> getStored(String id);
 
     Optional<SkillSubject> getSubject(Entity entity);
 

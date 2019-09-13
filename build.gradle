@@ -29,6 +29,7 @@ dependencies {
         exclude group: 'org.spongepowered'
     }
     compile 'org.spongepowered:spongeapi:7.2.0-SNAPSHOT'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 }
 
 shadowJar {

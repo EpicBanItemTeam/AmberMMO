@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.skill.data;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
+import io.izzel.amber.mmo.skill.SkillSubject;
 import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import io.izzel.amber.mmo.util.Identified;
 import org.spongepowered.api.data.DataSerializable;
@@ -19,7 +20,7 @@ import java.util.Optional;
  */
 public interface EntitySkill<S extends StoredSkill, C extends CastingSkill, B extends AbstractDataBuilder<?>> extends DataSerializable, Identified {
 
-    C createCast();
+    C createCast(SkillSubject subject);
 
     S getSkill();
 
@@ -27,9 +28,8 @@ public interface EntitySkill<S extends StoredSkill, C extends CastingSkill, B ex
 
     <T> Optional<T> getProperty(String id);
 
-    @Override
-    default String getId() {
-        return getSkill().getId();
+    default <T> T getUnchecked(String id) {
+        return this.<T>getProperty(id).orElseThrow(NullPointerException::new);
     }
 
     @Override

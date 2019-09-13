@@ -54,7 +54,7 @@ final class SkillSubjectImpl implements SkillSubject {
             Optional<E> optional = skillTree.find(cl);
             if (optional.isPresent()) {
                 E skill = optional.get();
-                C cast = skill.createCast();
+                C cast = skill.createCast(this);
                 return Optional.of(operate(cast, operation));
             }
         }

@@ -36,7 +36,7 @@ public class SkillRegistryEventImpl implements SkillEvent.Registry {
                     && arg2 instanceof Class && AbstractDataBuilder.class.isAssignableFrom(((Class) arg2))) {
                     map.put(typeId, ((Class) argument));
                     try {
-                        Constructor constructor = ((Class) arg2).getConstructor();
+                        Constructor constructor = ((Class) arg2).getDeclaredConstructor();
                         constructor.setAccessible(true);
                         dataManager.registerBuilder(cl, ((AbstractDataBuilder) constructor.newInstance()));
                     } catch (Exception e) {
