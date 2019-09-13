@@ -33,7 +33,7 @@ public class SkillRegistryEventImpl implements SkillEvent.Registry {
                 Type argument = ((ParameterizedType) type).getActualTypeArguments()[0];
                 Type arg2 = ((ParameterizedType) type).getActualTypeArguments()[2];
                 if (argument instanceof Class && StoredSkill.class.isAssignableFrom(((Class) argument))
-                    && arg2 instanceof ParameterizedType) {
+                    && arg2 instanceof Class && AbstractDataBuilder.class.isAssignableFrom(((Class) arg2))) {
                     map.put(typeId, ((Class) argument));
                     try {
                         Constructor constructor = ((Class) arg2).getConstructor();
