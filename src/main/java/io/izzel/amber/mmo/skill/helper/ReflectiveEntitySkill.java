@@ -59,7 +59,7 @@ public abstract class ReflectiveEntitySkill<S extends StoredSkill, C extends Ref
     @Override
     public DataContainer toContainer() {
         DataContainer container = super.toContainer();
-        for (Map.Entry<String, Field> entry : Capture.get(this.getClass()).entrySet()) {
+        for (Map.Entry<String, Field> entry : Capture.captureFields(this.getClass()).entrySet()) {
             String key = entry.getKey();
             Field field = entry.getValue();
             DataQuery query = FIELDS.then(key);

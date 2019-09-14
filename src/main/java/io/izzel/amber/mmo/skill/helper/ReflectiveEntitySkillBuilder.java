@@ -39,7 +39,7 @@ public class ReflectiveEntitySkillBuilder<E extends ReflectiveEntitySkill> exten
             ReflectiveEntitySkill instance = constructor.newInstance();
             instance.setId(container.getString(ID).get());
             instance.setProp(readProperties(container));
-            for (Map.Entry<String, Field> entry : Capture.get(requiredClass).entrySet()) {
+            for (Map.Entry<String, Field> entry : Capture.captureFields(requiredClass).entrySet()) {
                 String key = entry.getKey();
                 Field field = entry.getValue();
                 DataQuery query = FIELDS.then(key);
