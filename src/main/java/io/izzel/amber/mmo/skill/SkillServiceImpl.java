@@ -3,7 +3,7 @@ package io.izzel.amber.mmo.skill;
 import com.google.inject.Inject;
 import io.izzel.amber.mmo.skill.data.SkillTree;
 import io.izzel.amber.mmo.skill.data.SkillTreeLeaf;
-import io.izzel.amber.mmo.skill.event.SkillRegistryEventImpl;
+import io.izzel.amber.mmo.skill.event.SkillEvent;
 import io.izzel.amber.mmo.skill.storage.SkillStorage;
 import io.izzel.amber.mmo.skill.storage.StoredSkill;
 import org.spongepowered.api.Sponge;
@@ -33,7 +33,7 @@ final class SkillServiceImpl implements SkillService {
             dataManager.registerBuilder(SkillTree.class, new SkillTreeLeaf.Builder());
             try (CauseStackManager.StackFrame stackFrame = Sponge.getCauseStackManager().pushCauseFrame()) {
                 Map<String, Class<?>> map = new HashMap<>();
-                eventManager.post(new SkillRegistryEventImpl(stackFrame.getCurrentCause(), map));
+                eventManager.post(SkillEvent.createRegistry(stackFrame.getCurrentCause(), map));
                 storage.loadAll(map);
             }
         });

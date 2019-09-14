@@ -13,13 +13,13 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 @NonnullByDefault
-public class SkillRegistryEventImpl implements SkillEvent.Registry {
+class SkillRegistryEventImpl implements SkillEvent.Registry {
 
     private final Cause cause;
     private final Map<String, Class<?>> map;
     private final DataManager dataManager = Sponge.getDataManager();
 
-    public SkillRegistryEventImpl(Cause cause, Map<String, Class<?>> map) {
+    SkillRegistryEventImpl(Cause cause, Map<String, Class<?>> map) {
         this.cause = cause;
         this.map = map;
     }

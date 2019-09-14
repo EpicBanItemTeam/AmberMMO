@@ -7,9 +7,11 @@ import io.izzel.amber.mmo.profession.ProfessionService;
 import io.izzel.amber.mmo.profession.ProfessionSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.data.SkillTree;
+import io.izzel.amber.mmo.skill.event.SkillEvent;
 import io.izzel.amber.mmo.skill.op.SkillOperation;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.lang.ref.WeakReference;
@@ -41,7 +43,7 @@ final class SkillSubjectImpl implements SkillSubject {
 
     @Override
     public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> Optional<C> operate(Class<E> cl, SkillOperation<? super C> operation) throws UnsupportedOperationException {
-        Optional<Entity> entity = get();
+        Optional<Entity> entity = getEntity();
         if (entity.isPresent()) {
             if (multimap.containsKey(cl)) {
                 Collection<C> castingSkills = getCastingSkills(cl);
@@ -66,17 +68,24 @@ final class SkillSubjectImpl implements SkillSubject {
     @Override
     public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> C operate(C skill, SkillOperation<? super C> operation) {
         multimap.put((Class) skill.getOwning().getClass(), skill);
-        skill.perform(operation, operator);
+        try (CauseStackManager.StackFrame stackFrame = Sponge.getCauseStackManager().pushCauseFrame()) {
+            SkillEvent.Operate event = SkillEvent.createOperate(stackFrame.getCurrentCause(),
+                skill.getSubject().getEntity().orElseThrow(UnsupportedOperationException::new), skill, operation);
+            Sponge.getEventManager().post(event);
+            if (!event.isCancelled()) {
+                event.getCastingSkill().perform(event.getOperation(), operator);
+            }
+        }
         return skill;
     }
 
     @Override
     public boolean isValid() {
-        return get().isPresent();
+        return getEntity().isPresent();
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Entity> get() {
+    public Optional<Entity> getEntity() {
         Entity identifiable = entityWf.get();
         if (identifiable != null) return Optional.of(identifiable);
         else {
