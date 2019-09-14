@@ -1,7 +1,7 @@
 package io.izzel.amber.mmo.skill.event;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import lombok.Data;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.cause.Cause;

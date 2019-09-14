@@ -1,6 +1,6 @@
 package io.izzel.amber.mmo.skill.trigger.util;
 
-import io.izzel.amber.mmo.skill.op.SkillOperation;
+import io.izzel.amber.mmo.skill.SkillOperation;
 
 public interface Function2<A, B, O extends SkillOperation> extends OperateFunction<O> {
 

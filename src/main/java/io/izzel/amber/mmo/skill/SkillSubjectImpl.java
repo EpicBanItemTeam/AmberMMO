@@ -8,7 +8,6 @@ import io.izzel.amber.mmo.profession.ProfessionSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.data.SkillTree;
 import io.izzel.amber.mmo.skill.event.SkillEvent;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.CauseStackManager;

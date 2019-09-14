@@ -1,12 +1,13 @@
-package io.izzel.amber.mmo.skill.op;
+package io.izzel.amber.mmo.skill.skills.operations;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-abstract class AbstractOperation<C extends CastingSkill> implements SkillOperation<C> {
+public abstract class AbstractOperation<C extends CastingSkill> implements SkillOperation<C> {
 
     @Override
     public String getId() {
@@ -23,6 +24,7 @@ abstract class AbstractOperation<C extends CastingSkill> implements SkillOperati
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);

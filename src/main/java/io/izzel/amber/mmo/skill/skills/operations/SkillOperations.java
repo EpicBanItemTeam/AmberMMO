@@ -1,4 +1,4 @@
-package io.izzel.amber.mmo.skill.op;
+package io.izzel.amber.mmo.skill.skills.operations;
 
 import com.google.common.collect.ImmutableList;
 import org.spongepowered.api.entity.Entity;

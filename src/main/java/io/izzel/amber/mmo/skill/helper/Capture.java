@@ -2,8 +2,8 @@ package io.izzel.amber.mmo.skill.helper;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableSet;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import io.izzel.amber.mmo.skill.SkillSubject;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

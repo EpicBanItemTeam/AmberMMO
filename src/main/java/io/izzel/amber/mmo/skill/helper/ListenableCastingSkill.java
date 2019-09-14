@@ -3,9 +3,9 @@ package io.izzel.amber.mmo.skill.helper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import io.izzel.amber.mmo.skill.SkillSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,10 +1,10 @@
 package io.izzel.amber.mmo.skill.event;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.helper.ReflectiveEntitySkill;
 import io.izzel.amber.mmo.skill.helper.ReflectiveEntitySkillBuilder;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
 import io.izzel.amber.mmo.skill.trigger.TriggerModule;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.entity.Entity;

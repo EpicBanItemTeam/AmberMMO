@@ -1,7 +1,7 @@
 package io.izzel.amber.mmo.skill.trigger;
 
 import io.izzel.amber.mmo.skill.CastingSkill;
-import io.izzel.amber.mmo.skill.op.SkillOperation;
+import io.izzel.amber.mmo.skill.SkillOperation;
 import io.izzel.amber.mmo.skill.trigger.util.OperateFunction;
 import org.spongepowered.api.event.Event;
 

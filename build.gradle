@@ -1,7 +1,7 @@
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
     id 'java'
-    id "com.github.johnrengelman.shadow" version "5.1.0"
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 configurations {
@@ -10,6 +10,9 @@ configurations {
     sourceCompatibility = targetCompatibility = '1.8'
     sponge.plugin.id = pluginId
     defaultTasks 'clean', 'build', 'shadowJar'
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 }
 
 repositories {
