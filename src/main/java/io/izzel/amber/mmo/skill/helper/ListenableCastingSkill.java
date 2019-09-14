@@ -1,6 +1,8 @@
 package io.izzel.amber.mmo.skill.helper;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import io.izzel.amber.mmo.skill.SkillSubject;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.op.SkillOperation;
@@ -9,13 +11,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ListenableCastingSkill<E extends EntitySkill<?, ?>> extends ReflectiveCastingSkill<E> {
 
-    private final Map<Class, BiFunction<SkillOperation, SkillSubject.CastOperator, Void>> map = new HashMap<>();
+    private final Multimap<Class, BiFunction<SkillOperation, SkillSubject.CastOperator, Void>> map = MultimapBuilder.hashKeys().arrayListValues().build();
 
     public ListenableCastingSkill() {
         Type superclass = this.getClass().getGenericSuperclass();
@@ -39,7 +40,7 @@ public class ListenableCastingSkill<E extends EntitySkill<?, ?>> extends Reflect
     @Override
     protected final void perform(SkillOperation operation, SkillSubject.CastOperator operator) throws UnsupportedOperationException {
         Class<? extends SkillOperation> operationClass = operation.getClass();
-        for (Map.Entry<Class, BiFunction<SkillOperation, SkillSubject.CastOperator, Void>> entry : map.entrySet()) {
+        for (Map.Entry<Class, BiFunction<SkillOperation, SkillSubject.CastOperator, Void>> entry : map.entries()) {
             if (entry.getKey().isAssignableFrom(operationClass)) {
                 entry.getValue().apply(operation, operator);
             }

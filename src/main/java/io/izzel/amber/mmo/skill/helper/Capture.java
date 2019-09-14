@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.skill.helper;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.ImmutableSet;
 import io.izzel.amber.mmo.skill.SkillSubject;
 import io.izzel.amber.mmo.skill.op.SkillOperation;
 
@@ -31,7 +32,8 @@ final class Capture {
     static Map<Class, Method> captureMethods(Class cl) {
         return methods.computeIfAbsent(cl, it -> {
             Map<Class, Method> map = new HashMap<>();
-            for (Method declaredMethod : it.getDeclaredMethods()) {
+            ImmutableSet<Method> set = ImmutableSet.<Method>builder().add(it.getDeclaredMethods()).add(it.getMethods()).build();
+            for (Method declaredMethod : set) {
                 if (declaredMethod.isAnnotationPresent(Operation.class)) {
                     Class<?>[] types = declaredMethod.getParameterTypes();
                     if (types.length == 2 && SkillOperation.class.isAssignableFrom(types[0])
