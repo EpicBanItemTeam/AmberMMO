@@ -13,7 +13,7 @@ import org.spongepowered.api.text.Text;
 import java.util.List;
 
 @ConfigSerializable
-public abstract class AbstractStoredSkill implements StoredSkill {
+public class BaseStoredSkill implements StoredSkill {
 
     @Getter @Setting private String id;
     @Getter @Setting private Text name;
