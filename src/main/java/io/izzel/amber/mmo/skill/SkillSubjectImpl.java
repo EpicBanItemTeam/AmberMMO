@@ -25,7 +25,7 @@ final class SkillSubjectImpl implements SkillSubject {
     private final SetMultimap<Class<EntitySkill<?, ?>>, CastingSkill<?>> multimap = MultimapBuilder.hashKeys().linkedHashSetValues().build();
     private final Operator operator = new Operator();
 
-    public SkillSubjectImpl(Entity entity) {
+    SkillSubjectImpl(Entity entity) {
         this.entityWf = new WeakReference<>(entity);
         this.owner = entity.getUniqueId();
     }
@@ -67,12 +67,12 @@ final class SkillSubjectImpl implements SkillSubject {
     @SuppressWarnings("unchecked")
     @Override
     public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> C operate(C skill, SkillOperation<? super C> operation) {
-        multimap.put((Class) skill.getOwning().getClass(), skill);
         try (CauseStackManager.StackFrame stackFrame = Sponge.getCauseStackManager().pushCauseFrame()) {
             SkillEvent.Operate event = SkillEvent.createOperate(stackFrame.getCurrentCause(),
                 skill.getSubject().getEntity().orElseThrow(UnsupportedOperationException::new), skill, operation);
             Sponge.getEventManager().post(event);
             if (!event.isCancelled()) {
+                multimap.put((Class) skill.getOwning().getClass(), skill);
                 event.getCastingSkill().perform(event.getOperation(), operator);
             }
         }
