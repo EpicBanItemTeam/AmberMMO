@@ -11,9 +11,8 @@ import java.util.Objects;
 public class AmberMMO {
 
     @Inject
-    public AmberMMO(AmberLocale locale, MMOService service, ProfessionService profession) {
+    public AmberMMO(AmberLocale locale, ProfessionService profession) {
         Objects.requireNonNull(locale);
-        Objects.requireNonNull(service);
         Objects.requireNonNull(profession);
     }
 

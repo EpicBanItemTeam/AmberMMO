@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.skill.skills.operations;
 
+import io.izzel.amber.mmo.skill.AbstractOperation;
 import io.izzel.amber.mmo.skill.CastingSkill;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
