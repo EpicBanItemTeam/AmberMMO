@@ -14,7 +14,7 @@ public interface SkillService {
 
     Optional<SkillSubject> getSubject(Entity entity);
 
-    Optional<SkillSubject> getOrCreate(Entity entity);
+    SkillSubject getOrCreate(Entity entity);
 
     static SkillService instance() {
         return Sponge.getServiceManager().provideUnchecked(SkillService.class);

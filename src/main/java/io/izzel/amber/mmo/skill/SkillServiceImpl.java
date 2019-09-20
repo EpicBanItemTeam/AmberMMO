@@ -13,6 +13,7 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ final class SkillServiceImpl implements SkillService {
                 storage.loadAll(map);
             }
         });
+        Task.builder().intervalTicks(10).execute(() -> map.values().removeIf(it -> !it.isValid())).submit(container);
     }
 
     @SuppressWarnings("unchecked")
@@ -51,8 +53,8 @@ final class SkillServiceImpl implements SkillService {
     }
 
     @Override
-    public Optional<SkillSubject> getOrCreate(Entity entity) {
-        return Optional.of(map.computeIfAbsent(entity.getUniqueId(), uuid -> new SkillSubjectImpl(entity)));
+    public SkillSubject getOrCreate(Entity entity) {
+        return map.computeIfAbsent(entity.getUniqueId(), uuid -> new SkillSubjectImpl(entity));
     }
 
 }

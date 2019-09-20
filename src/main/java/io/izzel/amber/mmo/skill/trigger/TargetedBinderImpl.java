@@ -3,15 +3,14 @@ package io.izzel.amber.mmo.skill.trigger;
 import io.izzel.amber.mmo.skill.CastingSkill;
 import io.izzel.amber.mmo.skill.SkillOperation;
 import io.izzel.amber.mmo.skill.trigger.util.OperateFunction;
-import lombok.extern.slf4j.Slf4j;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Event;
+import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
-@Slf4j
 final class TargetedBinderImpl<E extends Event, C extends CastingSkill, O extends SkillOperation<? super C>, F extends OperateFunction<O>>
     implements TargetedBinder<E, C, O, F> {
 
@@ -33,9 +32,14 @@ final class TargetedBinderImpl<E extends Event, C extends CastingSkill, O extend
         Optional<PluginContainer> optional = Sponge.getCauseStackManager().getCurrentCause().first(PluginContainer.class);
         if (optional.isPresent()) {
             PluginContainer container = optional.get();
-            Sponge.getEventManager().registerListener(container, trigger.getEventClass(), trigger.getListener(predicate, function));
+            EventListener<E> listener = trigger.getListener(function);
+            Sponge.getEventManager().registerListener(container, trigger.getEventClass(), event -> {
+                if (predicate.test(event)) {
+                    listener.handle(event);
+                }
+            });
         } else {
-            log.warn("No PluginContainer found while binding triggers");
+            throw new IllegalStateException("No PluginContainer found while binding triggers");
         }
     }
 

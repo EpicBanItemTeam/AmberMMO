@@ -63,7 +63,6 @@ final class SkillSubjectImpl implements SkillSubject {
         return Optional.empty();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <C extends CastingSkill<E>, E extends EntitySkill<?, C>> C operate(C skill, SkillOperation<? super C> operation) {
         try (CauseStackManager.StackFrame stackFrame = Sponge.getCauseStackManager().pushCauseFrame()) {
@@ -71,7 +70,6 @@ final class SkillSubjectImpl implements SkillSubject {
                 skill.getSubject().getEntity().orElseThrow(UnsupportedOperationException::new), skill, operation);
             Sponge.getEventManager().post(event);
             if (!event.isCancelled()) {
-                multimap.put((Class) skill.getOwning().getClass(), skill);
                 event.getCastingSkill().perform(event.getOperation(), operator);
             }
         }
