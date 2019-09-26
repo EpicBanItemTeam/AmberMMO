@@ -4,10 +4,8 @@ import io.izzel.amber.mmo.skill.CastingSkill;
 import io.izzel.amber.mmo.skill.SkillOperation;
 import org.spongepowered.api.entity.Entity;
 
-import java.util.Collection;
+public interface OperationSourced<C extends CastingSkill> extends SkillOperation<C> {
 
-public interface OperationTargeted<C extends CastingSkill> extends SkillOperation<C> {
-
-    Collection<Entity> getTargets();
+    Entity getSource();
 
 }

@@ -1,16 +1,14 @@
 package io.izzel.amber.mmo.skill.trigger;
 
 import com.google.common.base.Preconditions;
-import io.izzel.amber.mmo.skill.CastingSkill;
-import io.izzel.amber.mmo.skill.SkillOperation;
-import io.izzel.amber.mmo.skill.trigger.util.OperateFunction;
+import io.izzel.amber.mmo.skill.trigger.dispatcher.OperateDispatcher;
 import org.spongepowered.api.event.Event;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public abstract class AbstractTrigger<E extends Event, C extends CastingSkill, O extends SkillOperation<? super C>, F extends OperateFunction<O>>
-    implements Trigger<E, C, O, F> {
+public abstract class AbstractTrigger<E extends Event, F extends OperateDispatcher>
+    implements Trigger<E, F> {
 
     private final Class<E> cl;
 

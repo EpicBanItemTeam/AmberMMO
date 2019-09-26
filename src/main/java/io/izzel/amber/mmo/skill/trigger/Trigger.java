@@ -1,15 +1,13 @@
 package io.izzel.amber.mmo.skill.trigger;
 
-import io.izzel.amber.mmo.skill.CastingSkill;
-import io.izzel.amber.mmo.skill.SkillOperation;
-import io.izzel.amber.mmo.skill.trigger.util.OperateFunction;
+import io.izzel.amber.mmo.skill.trigger.dispatcher.OperateDispatcher;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
 
-public interface Trigger<E extends Event, C extends CastingSkill, O extends SkillOperation<? super C>, F extends OperateFunction<O>> {
+public interface Trigger<E extends Event, F extends OperateDispatcher> {
 
     Class<E> getEventClass();
 
-    EventListener<E> getListener(F function);
+    EventListener<E> getListener(F dispatcher);
 
 }

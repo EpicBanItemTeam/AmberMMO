@@ -7,9 +7,9 @@ import io.izzel.amber.mmo.skill.SkillOperation;
 import org.spongepowered.api.entity.Entity;
 
 import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public final class SkillOperations {
 
     private static final Converter<String, String> CONVERTER = CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_CAMEL);
@@ -34,8 +34,48 @@ public final class SkillOperations {
             OperationTargeted.class, OperationEnd.class);
     }
 
-    public static <O extends SkillOperation> O lookingAt(Entity source, Collection<Entity> targets, boolean on) {
-        return on ? targetedStart(source, targets) : targetedEnd(source, targets);
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+
+        private final Map<String, Object> params = new HashMap<>();
+        private final List<Class<?>> intfs = new ArrayList<>();
+
+        private Builder() {
+        }
+
+        public Builder end() {
+            return type(OperationEnd.class);
+        }
+
+        public Builder start() {
+            return type(OperationStart.class);
+        }
+
+        public Builder targeted(Collection<Entity> targets) {
+            return type(OperationTargeted.class).param("targets", targets);
+        }
+
+        public Builder sourced(Entity source) {
+            return type(OperationSourced.class).param("source", source);
+        }
+
+        public Builder type(Class<?> intf) {
+            intfs.add(intf);
+            return this;
+        }
+
+        public Builder param(String name, Object value) {
+            params.put(name, value);
+            return this;
+        }
+
+        public <O extends SkillOperation> O build() {
+            return create(params, intfs.toArray(new Class[0]));
+        }
+
     }
 
 }
