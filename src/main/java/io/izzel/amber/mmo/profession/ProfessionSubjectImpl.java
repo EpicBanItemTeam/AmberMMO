@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-final class WrappedProfessionSubject implements ProfessionSubject {
+final class ProfessionSubjectImpl implements ProfessionSubject {
 
     private final EntityProfessionData.Mutable mutable;
     private final WeakReference<Entity> entityWf;
 
-    WrappedProfessionSubject(EntityProfessionData.Mutable mutable, Entity entity) {
+    ProfessionSubjectImpl(EntityProfessionData.Mutable mutable, Entity entity) {
         this.mutable = mutable;
         this.entityWf = new WeakReference<>(entity);
     }
