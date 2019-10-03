@@ -56,6 +56,11 @@ public abstract class AbstractEntitySkill<S extends StoredSkill, C extends Casti
     }
 
     @Override
+    public <T> void setProperty(String id, T value) {
+        props.put(id, value);
+    }
+
+    @Override
     public DataContainer toContainer() {
         DataContainer container = DataContainer.createNew()
             .set(Queries.CONTENT_VERSION, getContentVersion())

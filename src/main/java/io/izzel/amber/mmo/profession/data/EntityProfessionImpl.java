@@ -77,9 +77,15 @@ public class EntityProfessionImpl implements DataSerializable, EntityProfession 
         return container;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Optional<T> getProperty(String id) {
-        return Optional.empty();
+        return Optional.ofNullable(((T) properties.get(id)));
+    }
+
+    @Override
+    public <T> void setProperty(String id, T value) {
+        properties.put(id, value);
     }
 
     public static class Builder extends AbstractDataBuilder<EntityProfessionImpl> {

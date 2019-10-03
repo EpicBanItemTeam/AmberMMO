@@ -6,4 +6,6 @@ public interface Propertied {
 
     <T> Optional<T> getProperty(String id);
 
+    <T> void setProperty(String id, T value);
+
 }
