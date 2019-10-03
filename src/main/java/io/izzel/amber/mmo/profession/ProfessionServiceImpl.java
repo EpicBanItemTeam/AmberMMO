@@ -42,17 +42,24 @@ final class ProfessionServiceImpl implements ProfessionService {
 
     @Override
     public Optional<ProfessionSubject> getSubject(Entity entity) {
-        return entity.get(EntityProfessionData.Mutable.class).map(WrappedProfessionSubject::new);
+        return entity.get(EntityProfessionData.Mutable.class).map(it -> new WrappedProfessionSubject(it, entity));
     }
 
     @Override
     public ProfessionSubject getOrCreate(Entity entity) {
-        Optional<EntityProfessionData.Mutable> optional = entity.getOrCreate(EntityProfessionData.Mutable.class);
+        Optional<EntityProfessionData.Mutable> optional = entity.get(EntityProfessionData.Mutable.class);
         if (optional.isPresent()) {
             EntityProfessionData.Mutable mutable = optional.get();
-            return new WrappedProfessionSubject(mutable);
+            return new WrappedProfessionSubject(mutable, entity);
         } else {
-            throw new IllegalStateException("Cannot create profession data for " + entity);
+            Optional<EntityProfessionData.Mutable> create = entity.getOrCreate(EntityProfessionData.Mutable.class);
+            if (create.isPresent()) {
+                EntityProfessionData.Mutable valueContainer = create.get();
+                entity.offer(valueContainer);
+                return new WrappedProfessionSubject(valueContainer, entity);
+            } else {
+                throw new IllegalStateException("Cannot create profession data for " + entity);
+            }
         }
     }
 

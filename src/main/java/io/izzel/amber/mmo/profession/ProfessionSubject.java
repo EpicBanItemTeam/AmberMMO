@@ -4,8 +4,11 @@ import io.izzel.amber.mmo.skill.data.SkillTree;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public interface ProfessionSubject {
+
+    void computeProfession(Function<EntityProfession, EntityProfession> mapFunction);
 
     List<EntityProfession> getProfessions();
 

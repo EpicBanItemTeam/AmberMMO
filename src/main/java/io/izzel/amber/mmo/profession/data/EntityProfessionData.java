@@ -1,8 +1,10 @@
 package io.izzel.amber.mmo.profession.data;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.izzel.amber.mmo.profession.EntityProfession;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataQuery;
@@ -23,25 +25,26 @@ public class EntityProfessionData {
 
     public static class Mutable extends AbstractData<Mutable, Immutable> {
 
-        private final Map<String, EntityProfessionImpl> map;
+        private final Map<String, EntityProfession> map;
 
-        public Mutable(Map<String, EntityProfessionImpl> map) {
+        public Mutable(Map<String, EntityProfession> map) {
             this.map = Maps.newHashMap(map);
         }
 
-        public Map<String, EntityProfessionImpl> getProfessions() {
-            return Collections.unmodifiableMap(map);
+        public Map<String, EntityProfession> getProfessions() {
+            return ImmutableMap.copyOf(map);
         }
 
         @Override
         protected void registerGettersAndSetters() {
         }
 
-        public void update(EntityProfessionImpl entityProfessionImpl) {
-            map.put(entityProfessionImpl.getId(), entityProfessionImpl);
+        public void update(EntityProfession EntityProfession) {
+            map.put(EntityProfession.getId(), EntityProfession);
         }
 
-        @Nullable public EntityProfessionImpl remove(String id) {
+        @Nullable
+        public EntityProfession remove(String id) {
             return map.remove(id);
         }
 
@@ -77,17 +80,24 @@ public class EntityProfessionData {
         protected DataContainer fillContainer(DataContainer dataContainer) {
             return EntityProfessionData.fillContainer(super.fillContainer(dataContainer), map);
         }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("map", map)
+                .toString();
+        }
     }
 
     public static class Immutable extends AbstractImmutableData<Immutable, Mutable> {
 
-        private final Map<String, EntityProfessionImpl> map;
+        private final Map<String, EntityProfession> map;
 
-        public Immutable(Map<String, EntityProfessionImpl> map) {
+        public Immutable(Map<String, EntityProfession> map) {
             this.map = ImmutableMap.copyOf(map);
         }
 
-        public Map<String, EntityProfessionImpl> getProfessions() {
+        public Map<String, EntityProfession> getProfessions() {
             return Collections.unmodifiableMap(map);
         }
 
@@ -135,16 +145,17 @@ public class EntityProfessionData {
 
     private static DataQuery PROF = DataQuery.of("Profession");
 
-    private static DataContainer fillContainer(DataContainer container, Map<String, EntityProfessionImpl> map) {
+    private static DataContainer fillContainer(DataContainer container, Map<String, EntityProfession> map) {
         container.set(PROF, ImmutableList.copyOf(map.values()));
         return container;
     }
 
+    @SuppressWarnings("unchecked")
     private static Mutable fromContainer(DataView container, Mutable data) {
-        Optional<List<EntityProfessionImpl>> list = container.getSerializableList(PROF, EntityProfessionImpl.class);
+        Optional<List<EntityProfession>> list = (Optional) container.getSerializableList(PROF, EntityProfessionImpl.class);
         if (list.isPresent()) {
-            List<EntityProfessionImpl> professions = list.get();
-            for (EntityProfessionImpl profession : professions) {
+            List<EntityProfession> professions = list.get();
+            for (EntityProfession profession : professions) {
                 data.map.put(profession.getId(), profession);
             }
         }

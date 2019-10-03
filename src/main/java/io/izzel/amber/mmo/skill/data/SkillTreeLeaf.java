@@ -44,7 +44,8 @@ public class SkillTreeLeaf extends SkillTreeRoot implements SkillTree.Leaf {
     @Override
     public DataContainer toContainer() {
         return super.toContainer()
-            .set(SKILL, entitySkill);
+            .set(SKILL.then("Type"), entitySkill.getClass().getName())
+            .set(SKILL.then("Value"), entitySkill);
     }
 
     @Override
@@ -80,8 +81,14 @@ public class SkillTreeLeaf extends SkillTreeRoot implements SkillTree.Leaf {
         protected Optional<SkillTree> buildContent(DataView container) throws InvalidDataException {
             List<SkillTree.Leaf> list = (List) container.getSerializableList(CHILDREN, SkillTree.class).orElseThrow(InvalidDataException::new);
             if (container.contains(SKILL)) {
-                EntitySkill skill = container.getSerializable(SKILL, EntitySkill.class).orElseThrow(InvalidDataException::new);
-                return Optional.of(new SkillTreeLeaf(skill, list));
+                try {
+                    Class<? extends EntitySkill> type = (Class<? extends EntitySkill>)
+                        Class.forName(container.getString(SKILL.then("Type")).orElseThrow(NullPointerException::new));
+                    EntitySkill skill = container.getSerializable(SKILL.then("Value"), type).orElseThrow(NullPointerException::new);
+                    return Optional.of(new SkillTreeLeaf(skill, list));
+                } catch (Exception e) {
+                    throw new InvalidDataException(e);
+                }
             } else {
                 return Optional.of(new SkillTreeRoot(list));
             }

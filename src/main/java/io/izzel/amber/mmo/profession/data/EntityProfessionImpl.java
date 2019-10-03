@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.profession.data;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import io.izzel.amber.mmo.profession.EntityProfession;
 import io.izzel.amber.mmo.skill.data.SkillTree;
@@ -35,6 +36,7 @@ public class EntityProfessionImpl implements DataSerializable, EntityProfession 
         this.properties = properties;
     }
 
+    @Override
     public double getExperience() {
         return experience;
     }
@@ -53,10 +55,12 @@ public class EntityProfessionImpl implements DataSerializable, EntityProfession 
         this.experience = experience;
     }
 
+    @Override
     public SkillTree getSkillTree() {
         return skillTree;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -86,6 +90,16 @@ public class EntityProfessionImpl implements DataSerializable, EntityProfession 
     @Override
     public <T> void setProperty(String id, T value) {
         properties.put(id, value);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("skillTree", skillTree)
+            .add("experience", experience)
+            .add("properties", properties)
+            .toString();
     }
 
     public static class Builder extends AbstractDataBuilder<EntityProfessionImpl> {

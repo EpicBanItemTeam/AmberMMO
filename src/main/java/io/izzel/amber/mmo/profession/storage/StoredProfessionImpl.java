@@ -6,6 +6,7 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ConfigSerializable
@@ -23,17 +24,17 @@ public class StoredProfessionImpl implements StoredProfession {
 
     @Override
     public List<String> getTags() {
-        return tags;
+        return tags == null ? tags = new ArrayList<>() : tags;
     }
 
     @Override
     public Text getName() {
-        return name;
+        return name == null ? Text.of() : name;
     }
 
     @Override
     public List<Text> getDescription() {
-        return description;
+        return description == null ? description = new ArrayList<>() : description;
     }
 
     void setId(String id) {
