@@ -1,58 +1,34 @@
 package io.izzel.amber.mmo.profession;
 
-import io.izzel.amber.mmo.profession.data.MutableProfession;
+import com.google.common.collect.ImmutableList;
+import io.izzel.amber.mmo.profession.data.EntityProfessionData;
+import io.izzel.amber.mmo.profession.data.EntityProfessionImpl;
 import io.izzel.amber.mmo.skill.data.SkillTree;
-import org.spongepowered.api.text.Text;
 
 import java.util.List;
 
 final class WrappedProfessionSubject implements ProfessionSubject {
 
-    private final Profession profession;
-    private final MutableProfession mutableProfession;
+    private final EntityProfessionData.Mutable mutable;
 
-    WrappedProfessionSubject(Profession profession, MutableProfession mutableProfession) {
-        this.profession = profession;
-        this.mutableProfession = mutableProfession;
+    WrappedProfessionSubject(EntityProfessionData.Mutable mutable) {
+        this.mutable = mutable;
     }
 
     @Override
-    public SkillTree getSkillTree() {
-        return mutableProfession.getSkillTree();
+    public List<EntityProfession> getProfessions() {
+        return ImmutableList.copyOf(mutable.getProfessions().values());
     }
 
     @Override
-    public double getExperience() {
-        return mutableProfession.getExperience();
+    public EntityProfession add(String id) {
+        EntityProfessionImpl entityProfessionImpl = new EntityProfessionImpl(id, SkillTree.empty(), 0D);
+        this.mutable.update(entityProfessionImpl);
+        return entityProfessionImpl;
     }
 
     @Override
-    public void increaseExperience(double d) {
-        mutableProfession.setExperience(getExperience() + d);
-    }
-
-    @Override
-    public void decreaseExperience(double d) {
-        mutableProfession.setExperience(getExperience() - d);
-    }
-
-    @Override
-    public String getId() {
-        return profession.getId();
-    }
-
-    @Override
-    public List<String> getTags() {
-        return profession.getTags();
-    }
-
-    @Override
-    public Text getName() {
-        return profession.getName();
-    }
-
-    @Override
-    public List<Text> getDescription() {
-        return profession.getDescription();
+    public boolean remove(String id) {
+        return this.mutable.remove(id) != null;
     }
 }

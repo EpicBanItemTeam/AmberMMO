@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.skill.helper;
 
+import io.izzel.amber.mmo.util.PropertyUtil;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.InvalidDataException;
@@ -14,14 +15,14 @@ import static io.izzel.amber.mmo.skill.helper.AbstractEntitySkill.ID;
 import static io.izzel.amber.mmo.skill.helper.ReflectiveEntitySkill.FIELDS;
 
 @NonnullByDefault
-public class ReflectiveEntitySkillBuilder<E extends ReflectiveEntitySkill> extends AbstractEntitySkillBuilder<E> {
+public class ReflectiveEntitySkillBuilder<E extends ReflectiveEntitySkill> extends org.spongepowered.api.data.persistence.AbstractDataBuilder<E> {
 
     private final Constructor<ReflectiveEntitySkill> constructor;
     private final Class<E> requiredClass;
 
     @SuppressWarnings("unchecked")
     public ReflectiveEntitySkillBuilder(Class<E> requiredClass) {
-        super(requiredClass);
+        super(requiredClass, 0);
         this.requiredClass = requiredClass;
         try {
             Constructor constructor = requiredClass.getDeclaredConstructor();
@@ -38,12 +39,12 @@ public class ReflectiveEntitySkillBuilder<E extends ReflectiveEntitySkill> exten
         try {
             ReflectiveEntitySkill instance = constructor.newInstance();
             instance.setId(container.getString(ID).get());
-            instance.setProp(readProperties(container));
+            instance.setProp(PropertyUtil.readPropertyMap(container));
             for (Map.Entry<String, Field> entry : Capture.captureFields(requiredClass).entrySet()) {
                 String key = entry.getKey();
                 Field field = entry.getValue();
                 DataQuery query = FIELDS.then(key);
-                Optional<?> read = read(container, field.getType(), query);
+                Optional<?> read = PropertyUtil.read(container, field.getType(), query);
                 if (read.isPresent()) field.set(instance, read.get());
             }
             return Optional.of(((E) instance));

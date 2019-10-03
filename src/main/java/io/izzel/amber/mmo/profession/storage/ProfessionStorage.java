@@ -2,7 +2,7 @@ package io.izzel.amber.mmo.profession.storage;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import io.izzel.amber.mmo.profession.Profession;
+import io.izzel.amber.mmo.profession.StoredProfession;
 import ninja.leaping.configurate.ValueType;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -17,11 +17,11 @@ import java.util.Map;
 
 public class ProfessionStorage {
 
-    private static final TypeToken<StoredProfession> TOKEN = TypeToken.of(StoredProfession.class);
+    private static final TypeToken<StoredProfessionImpl> TOKEN = TypeToken.of(StoredProfessionImpl.class);
 
     @Inject @ConfigDir(sharedRoot = false) private Path dir;
 
-    private final Map<String, Profession> map = new HashMap<>();
+    private final Map<String, StoredProfession> map = new HashMap<>();
 
     public void load() {
         try {
@@ -33,11 +33,11 @@ public class ProfessionStorage {
             if (load.getValueType() == ValueType.MAP) {
                 for (Map.Entry<Object, ? extends CommentedConfigurationNode> entry : load.getChildrenMap().entrySet()) {
                     String id = entry.getKey().toString();
-                    StoredProfession profession = entry.getValue().getValue(TOKEN);
-                    if (profession != null) {
-                        profession.setId(id);
-                        profession.getTags().add(id); //
-                        map.put(id, profession);
+                    StoredProfessionImpl storedProfession = entry.getValue().getValue(TOKEN);
+                    if (storedProfession != null) {
+                        storedProfession.setId(id);
+                        storedProfession.getTags().add(id); //
+                        map.put(id, storedProfession);
                     }
                 }
             } else {
@@ -48,7 +48,7 @@ public class ProfessionStorage {
         }
     }
 
-    public Map<String, Profession> getLoaded() {
+    public Map<String, StoredProfession> getLoaded() {
         return map;
     }
 }

@@ -15,6 +15,7 @@ import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @NonnullByDefault
@@ -22,18 +23,26 @@ public class EntityProfessionData {
 
     public static class Mutable extends AbstractData<Mutable, Immutable> {
 
-        private final Map<String, MutableProfession> map;
+        private final Map<String, EntityProfessionImpl> map;
 
-        public Mutable(Map<String, MutableProfession> map) {
+        public Mutable(Map<String, EntityProfessionImpl> map) {
             this.map = Maps.newHashMap(map);
         }
 
-        public Map<String, MutableProfession> getProfessions() {
+        public Map<String, EntityProfessionImpl> getProfessions() {
             return Collections.unmodifiableMap(map);
         }
 
         @Override
         protected void registerGettersAndSetters() {
+        }
+
+        public void update(EntityProfessionImpl entityProfessionImpl) {
+            map.put(entityProfessionImpl.getId(), entityProfessionImpl);
+        }
+
+        @Nullable public EntityProfessionImpl remove(String id) {
+            return map.remove(id);
         }
 
         @Override
@@ -72,13 +81,13 @@ public class EntityProfessionData {
 
     public static class Immutable extends AbstractImmutableData<Immutable, Mutable> {
 
-        private final Map<String, MutableProfession> map;
+        private final Map<String, EntityProfessionImpl> map;
 
-        public Immutable(Map<String, MutableProfession> map) {
+        public Immutable(Map<String, EntityProfessionImpl> map) {
             this.map = ImmutableMap.copyOf(map);
         }
 
-        public Map<String, MutableProfession> getProfessions() {
+        public Map<String, EntityProfessionImpl> getProfessions() {
             return Collections.unmodifiableMap(map);
         }
 
@@ -126,16 +135,16 @@ public class EntityProfessionData {
 
     private static DataQuery PROF = DataQuery.of("Profession");
 
-    private static DataContainer fillContainer(DataContainer container, Map<String, MutableProfession> map) {
+    private static DataContainer fillContainer(DataContainer container, Map<String, EntityProfessionImpl> map) {
         container.set(PROF, ImmutableList.copyOf(map.values()));
         return container;
     }
 
     private static Mutable fromContainer(DataView container, Mutable data) {
-        Optional<List<MutableProfession>> list = container.getSerializableList(PROF, MutableProfession.class);
+        Optional<List<EntityProfessionImpl>> list = container.getSerializableList(PROF, EntityProfessionImpl.class);
         if (list.isPresent()) {
-            List<MutableProfession> professions = list.get();
-            for (MutableProfession profession : professions) {
+            List<EntityProfessionImpl> professions = list.get();
+            for (EntityProfessionImpl profession : professions) {
                 data.map.put(profession.getId(), profession);
             }
         }

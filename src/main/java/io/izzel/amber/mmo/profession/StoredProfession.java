@@ -4,6 +4,6 @@ import io.izzel.amber.mmo.util.Displayed;
 import io.izzel.amber.mmo.util.Identified;
 import io.izzel.amber.mmo.util.Tagged;
 
-public interface Profession extends Tagged, Identified, Displayed {
+public interface StoredProfession extends Tagged, Identified, Displayed {
 
 }

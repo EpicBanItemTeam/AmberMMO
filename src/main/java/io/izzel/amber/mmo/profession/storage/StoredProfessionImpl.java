@@ -1,7 +1,7 @@
 package io.izzel.amber.mmo.profession.storage;
 
 import com.google.common.base.MoreObjects;
-import io.izzel.amber.mmo.profession.Profession;
+import io.izzel.amber.mmo.profession.StoredProfession;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.text.Text;
@@ -9,7 +9,7 @@ import org.spongepowered.api.text.Text;
 import java.util.List;
 
 @ConfigSerializable
-public class StoredProfession implements Profession {
+public class StoredProfessionImpl implements StoredProfession {
 
     @Setting private Text name;
     @Setting private List<String> tags;

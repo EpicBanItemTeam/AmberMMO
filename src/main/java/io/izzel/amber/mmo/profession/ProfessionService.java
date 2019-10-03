@@ -10,11 +10,13 @@ import java.util.Optional;
 @ImplementedBy(ProfessionServiceImpl.class)
 public interface ProfessionService {
 
-    List<ProfessionSubject> getProfessions(Entity entity);
+    Optional<ProfessionSubject> getSubject(Entity entity);
 
-    List<Profession> listAll();
+    ProfessionSubject getOrCreate(Entity entity);
 
-    Optional<Profession> getById(String id);
+    List<StoredProfession> listAll();
+
+    Optional<StoredProfession> getById(String id);
 
     static ProfessionService instance() {
         return Sponge.getServiceManager().provideUnchecked(ProfessionService.class);

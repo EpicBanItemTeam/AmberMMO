@@ -14,7 +14,10 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 @NonnullByDefault
 final class SkillSubjectImpl implements SkillSubject {
@@ -51,8 +54,8 @@ final class SkillSubjectImpl implements SkillSubject {
                     return Optional.of(operate(skill, operation));
                 }
             }
-            List<ProfessionSubject> professions = ProfessionService.instance().getProfessions(entity.get());
-            SkillTree skillTree = professions.stream().map(ProfessionSubject::getSkillTree).reduce(SkillTree.empty(), SkillTree::merge);
+            ProfessionSubject subject = ProfessionService.instance().getOrCreate(entity.get());
+            SkillTree skillTree = subject.getMerged();
             Optional<E> optional = skillTree.find(cl);
             if (optional.isPresent()) {
                 E skill = optional.get();

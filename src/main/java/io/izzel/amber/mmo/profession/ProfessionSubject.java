@@ -2,14 +2,27 @@ package io.izzel.amber.mmo.profession;
 
 import io.izzel.amber.mmo.skill.data.SkillTree;
 
-public interface ProfessionSubject extends Profession {
+import java.util.List;
+import java.util.Optional;
 
-    SkillTree getSkillTree();
+public interface ProfessionSubject {
 
-    double getExperience();
+    List<EntityProfession> getProfessions();
 
-    void increaseExperience(double d);
+    default Optional<EntityProfession> get(String id) {
+        return getProfessions().stream().filter(it -> it.getId().equals(id)).findAny();
+    }
 
-    void decreaseExperience(double d);
+    default EntityProfession getUnchecked(String id) {
+        return get(id).orElseThrow(NullPointerException::new);
+    }
+
+    default SkillTree getMerged() {
+        return getProfessions().stream().map(EntityProfession::getSkillTree).reduce(SkillTree::merge).orElse(SkillTree.empty());
+    }
+
+    EntityProfession add(String id);
+
+    boolean remove(String id);
 
 }

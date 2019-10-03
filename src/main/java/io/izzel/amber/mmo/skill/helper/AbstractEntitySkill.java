@@ -5,6 +5,7 @@ import io.izzel.amber.mmo.skill.CastingSkill;
 import io.izzel.amber.mmo.skill.SkillService;
 import io.izzel.amber.mmo.skill.data.EntitySkill;
 import io.izzel.amber.mmo.skill.storage.StoredSkill;
+import io.izzel.amber.mmo.util.PropertyUtil;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.Queries;
@@ -59,11 +60,7 @@ public abstract class AbstractEntitySkill<S extends StoredSkill, C extends Casti
         DataContainer container = DataContainer.createNew()
             .set(Queries.CONTENT_VERSION, getContentVersion())
             .set(ID, Objects.requireNonNull(id));
-        for (Map.Entry<String, Object> entry : props.entrySet()) {
-            DataQuery query = PROP.then(entry.getKey());
-            container.set(query.then("Type"), entry.getValue().getClass().getName());
-            container.set(query.then("Value"), entry.getValue());
-        }
+        PropertyUtil.writePropertyMap(container, props);
         return container;
     }
 
