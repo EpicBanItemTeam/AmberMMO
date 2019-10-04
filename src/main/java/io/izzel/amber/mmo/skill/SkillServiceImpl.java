@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.skill;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.izzel.amber.mmo.skill.data.SkillTree;
 import io.izzel.amber.mmo.skill.data.SkillTreeLeaf;
 import io.izzel.amber.mmo.skill.event.SkillEvent;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@Singleton
 @NonnullByDefault
 final class SkillServiceImpl implements SkillService {
 
