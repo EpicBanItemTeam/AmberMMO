@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
-public class MenuImpl implements Menu {
+class MenuImpl implements Menu {
 
     private final Inventory inventory;
 
