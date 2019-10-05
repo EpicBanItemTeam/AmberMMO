@@ -24,10 +24,6 @@ public interface EntitySkill<S extends StoredSkill, C extends CastingSkill> exte
 
     List<Text> getExtendDescription();
 
-    default <T> T getUnchecked(String id) {
-        return this.<T>getProperty(id).orElseThrow(NullPointerException::new);
-    }
-
     @Override
     default int getContentVersion() {
         return 0;

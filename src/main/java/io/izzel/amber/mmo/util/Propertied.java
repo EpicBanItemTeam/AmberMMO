@@ -8,4 +8,8 @@ public interface Propertied {
 
     <T> void setProperty(String id, T value);
 
+    default <T> T getUnchecked(String id) {
+        return this.<T>getProperty(id).orElseThrow(NullPointerException::new);
+    }
+
 }
