@@ -30,6 +30,8 @@ public interface SkillTree extends DataSerializable, Iterable<SkillTree.Leaf> {
 
     void remove(Leaf child);
 
+    SkillTree getParent();
+
     default boolean isEmpty() {
         if (this instanceof Leaf) return false;
         else return getChildren().stream().allMatch(SkillTree::isEmpty);

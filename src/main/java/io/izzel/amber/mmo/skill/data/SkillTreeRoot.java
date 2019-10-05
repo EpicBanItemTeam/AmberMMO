@@ -37,6 +37,8 @@ class SkillTreeRoot implements SkillTree {
     public void setChildren(List<Leaf> children) {
         this.children.clear();
         this.children.addAll(children);
+        children.stream().filter(SkillTreeLeaf.class::isInstance).map(SkillTreeLeaf.class::cast)
+            .forEach(it -> it.setParent(this));
     }
 
     @Override
@@ -47,11 +49,22 @@ class SkillTreeRoot implements SkillTree {
     @Override
     public void add(Leaf child) {
         this.children.add(child);
+        if (child instanceof SkillTreeLeaf) {
+            ((SkillTreeLeaf) child).setParent(this);
+        }
     }
 
     @Override
     public void remove(Leaf child) {
         this.children.remove(child);
+        if (child instanceof SkillTreeLeaf) {
+            ((SkillTreeLeaf) child).setParent(null);
+        }
+    }
+
+    @Override
+    public SkillTree getParent() {
+        return this;
     }
 
     @Override

@@ -20,6 +20,7 @@ public class SkillTreeLeaf extends SkillTreeRoot implements SkillTree.Leaf {
     private static final DataQuery SKILL = DataQuery.of("EntitySkill");
 
     private final EntitySkill entitySkill;
+    @Nullable private SkillTree parent;
 
     public SkillTreeLeaf(EntitySkill entitySkill) {
         this(entitySkill, ImmutableList.of());
@@ -39,6 +40,15 @@ public class SkillTreeLeaf extends SkillTreeRoot implements SkillTree.Leaf {
     @Override
     public Leaf copy() {
         return new SkillTreeLeaf(entitySkill, getChildren());
+    }
+
+    @Override
+    public SkillTree getParent() {
+        return Objects.requireNonNull(parent);
+    }
+
+    void setParent(@Nullable SkillTree parent) {
+        this.parent = parent;
     }
 
     @Override
