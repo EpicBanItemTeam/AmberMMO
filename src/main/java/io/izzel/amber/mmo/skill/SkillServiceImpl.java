@@ -15,6 +15,7 @@ import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.ServiceManager;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
@@ -30,8 +31,10 @@ final class SkillServiceImpl implements SkillService {
     private final Map<UUID, SkillSubject> map = new HashMap<>();
 
     @Inject
-    public SkillServiceImpl(PluginContainer container, EventManager eventManager, DataManager dataManager, SkillStorage storage) {
+    public SkillServiceImpl(PluginContainer container, EventManager eventManager, DataManager dataManager,
+                            ServiceManager serviceManager, SkillStorage storage) {
         this.storage = storage;
+        serviceManager.setProvider(container, SkillService.class, this);
         eventManager.registerListener(container, GameInitializationEvent.class, event -> {
             dataManager.registerBuilder(SkillTree.class, new SkillTreeLeaf.Builder());
             try (CauseStackManager.StackFrame stackFrame = Sponge.getCauseStackManager().pushCauseFrame()) {

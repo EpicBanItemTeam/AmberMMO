@@ -12,8 +12,4 @@ public class VanillaEntry implements DropTable {
 
     }
 
-    public String getId() {
-        return null;
-    }
-
 }

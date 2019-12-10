@@ -3,7 +3,6 @@ package io.izzel.amber.mmo.drops.types;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropTable;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.Types;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,19 +19,19 @@ public class AmountSerializer implements TypeSerializer<Amount> {
     public Amount deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) throws ObjectMappingException {
         switch (value.getValueType()) {
             case SCALAR:
-                return new Fixed(Coerce.toInteger(value.getValue()));
+                return new Fixed(Coerce.toDouble(value.getValue()));
             case MAP: break;
             case LIST:
-                List<Integer> list = value.getList(Types::asInt);
+                List<Double> list = value.getList(Coerce::toDouble);
                 if (list.size() == 1) {
                     double i = list.get(0);
-                    return new Fixed(i);
+                    return Amount.fixed(i);
                 } else if (list.size() == 2) {
                     double l = list.get(0), r = list.get(1);
-                    return new Ranged(l, r + 1);
+                    return new Ranged(l, r + 1); // todo r + 1
                 }
                 break;
-            case NULL: return new Fixed(1);
+            case NULL: return Amount.fixed(1);
         }
         throw new ObjectMappingException("Unknown amount type: " + value);
     }
@@ -65,11 +64,11 @@ public class AmountSerializer implements TypeSerializer<Amount> {
         }
     }
 
-    private static class Ranged implements Amount {
+    static class Ranged implements Amount {
 
         private final double l, r;
 
-        private Ranged(double l, double r) {
+        Ranged(double l, double r) {
             this.l = Math.min(l, r);
             this.r = Math.max(l, r);
         }

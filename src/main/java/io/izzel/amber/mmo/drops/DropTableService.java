@@ -18,6 +18,8 @@ public interface DropTableService {
 
     Optional<DropTable> getDropTableById(String id);
 
+    void reloadDropTables() throws Exception;
+
     static DropTableService instance() {
         return Sponge.getServiceManager().provideUnchecked(DropTableService.class);
     }

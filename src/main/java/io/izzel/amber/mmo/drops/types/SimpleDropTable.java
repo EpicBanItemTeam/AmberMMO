@@ -8,17 +8,29 @@ import java.util.List;
 
 public class SimpleDropTable implements DropTable {
 
+    private final String id;
     private final List<DropTable> list;
+    private final int roll;
 
-    SimpleDropTable(List<DropTable> list) {
+    SimpleDropTable(String id, List<DropTable> list, int roll) {
+        this.id = id;
         this.list = list;
+        this.roll = roll;
     }
 
     @Override
     public void accepts(Cause cause) {
-        for (DropTable table : list) {
-            table.accepts(cause);
+        Cause newCause = cause.with(this);
+        for (int i = 0; i < roll; i++) {
+            for (DropTable table : list) {
+                table.accepts(newCause);
+            }
         }
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
