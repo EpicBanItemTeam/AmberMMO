@@ -20,19 +20,20 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 @Singleton
 class DropTableServiceImpl implements DropTableService {
 
-    private final Path path;
+    private final Path droptableFolder;
     private final Map<String, Class<?>> map = new HashMap<>();
     private Map<String, DropTable> tables = new HashMap<>();
 
     @Inject
     public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path) {
-        this.path = path.resolve("droptable.conf");
+        this.droptableFolder = path.resolve("droptables");
         game.getServiceManager().setProvider(container, DropTableService.class, this);
         TypeSerializers.getDefaultSerializers()
             .registerType(TypeToken.of(DropTable.class), new DropTableTypeSerializer())
@@ -74,6 +75,18 @@ class DropTableServiceImpl implements DropTableService {
 
     @Override
     public void reloadDropTables() throws Exception {
+        this.tables.clear();
+        if (!Files.exists(droptableFolder)) Files.createDirectories(droptableFolder);
+        val iterator = Files.walk(droptableFolder).iterator();
+        while (iterator.hasNext()) {
+            Path path = iterator.next();
+            if (!Files.isDirectory(path)) {
+                this.tables.putAll(load(path));
+            }
+        }
+    }
+
+    private Map<String, DropTable> load(Path path) throws Exception {
         Map<String, DropTable> map = Maps.newHashMap();
         CommentedConfigurationNode node = HoconConfigurationLoader.builder().setPath(path).build().load();
         for (val entry : node.getChildrenMap().entrySet()) {
@@ -83,8 +96,7 @@ class DropTableServiceImpl implements DropTableService {
             } catch (Throwable ignored) {
             }
         }
-        this.tables.clear();
-        this.tables.putAll(map);
+        return map;
     }
 
 }
