@@ -1,6 +1,7 @@
 package io.izzel.amber.mmo.drops;
 
 import com.google.inject.ImplementedBy;
+import io.izzel.amber.mmo.util.Propertied;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.Sponge;
 
@@ -17,6 +18,8 @@ public interface DropTableService {
     <T extends DropTable> Class<T> getTypeById(String id);
 
     Optional<DropTable> getDropTableById(String id);
+
+    Propertied queryDroptable(String query);
 
     void reloadDropTables() throws Exception;
 

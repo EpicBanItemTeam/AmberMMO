@@ -9,7 +9,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.api.event.cause.Cause;
 
 public class DropTableEntry implements DropTable {
 
@@ -20,8 +19,8 @@ public class DropTableEntry implements DropTable {
     }
 
     @Override
-    public void accepts(Cause cause) {
-        DropTableService.instance().getDropTableById(table).ifPresent(it -> it.accepts(cause));
+    public void accepts() {
+        DropTableService.instance().getDropTableById(table).ifPresent(DropTable::accepts);
     }
 
     @Override

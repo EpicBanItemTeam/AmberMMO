@@ -7,7 +7,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.util.Coerce;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class AmountSerializer implements TypeSerializer<Amount> {
     public Amount deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) throws ObjectMappingException {
         switch (value.getValueType()) {
             case SCALAR:
-                return new Fixed(Coerce.toDouble(value.getValue()));
+                return Amount.fixed(Coerce.toDouble(value.getValue()));
             case MAP: break;
             case LIST:
                 List<Double> list = value.getList(Coerce::toDouble);
@@ -28,7 +27,7 @@ public class AmountSerializer implements TypeSerializer<Amount> {
                     return Amount.fixed(i);
                 } else if (list.size() == 2) {
                     double l = list.get(0), r = list.get(1);
-                    return new Ranged(l, r + 1); // todo r + 1
+                    return Amount.ranged(l, r + 1); // todo r + 1
                 }
                 break;
             case NULL: return Amount.fixed(1);
@@ -40,16 +39,24 @@ public class AmountSerializer implements TypeSerializer<Amount> {
     public void serialize(@NonNull TypeToken<?> type, @Nullable Amount obj, @NonNull ConfigurationNode value) {
     }
 
-    static class Fixed implements Amount {
+    static Amount fixed(double d) {
+        return new Fixed(d);
+    }
+
+    static Amount ranged(double l, double r) {
+        return new Ranged(l, r);
+    }
+
+    private static class Fixed implements Amount {
 
         private final double i;
 
-        Fixed(double i) {
+        private Fixed(double i) {
             this.i = i;
         }
 
         @Override
-        public double get(Cause cause) {
+        public double get() {
             return i;
         }
 
@@ -64,17 +71,17 @@ public class AmountSerializer implements TypeSerializer<Amount> {
         }
     }
 
-    static class Ranged implements Amount {
+    private static class Ranged implements Amount {
 
         private final double l, r;
 
-        Ranged(double l, double r) {
+        private Ranged(double l, double r) {
             this.l = Math.min(l, r);
             this.r = Math.max(l, r);
         }
 
         @Override
-        public double get(Cause cause) {
+        public double get() {
             return DropTable.RANDOM.nextDouble() * (r - l) + l;
         }
 

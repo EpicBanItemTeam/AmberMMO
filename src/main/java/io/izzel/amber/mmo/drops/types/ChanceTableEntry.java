@@ -4,10 +4,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.izzel.amber.mmo.drops.DropTable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.event.cause.Cause;
 
-public class SimpleDropTableEntry implements DropTable {
+public class ChanceTableEntry implements DropTable {
 
     private final String id;
 
@@ -17,7 +15,7 @@ public class SimpleDropTableEntry implements DropTable {
 
     private final Amount amount;
 
-    SimpleDropTableEntry(String id, DropTable actual, double probability, Amount amount) {
+    ChanceTableEntry(String id, DropTable actual, double probability, Amount amount) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(actual);
         Preconditions.checkArgument(probability >= 0 && probability <= 1, "probability should be in [0, 1]");
@@ -29,15 +27,12 @@ public class SimpleDropTableEntry implements DropTable {
     }
 
     @Override
-    public void accepts(Cause cause) {
+    public void accepts() {
         if (DropTable.RANDOM.nextDouble() < probability) {
-            try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                frame.pushCause(this);
-                Cause newCause = frame.getCurrentCause();
-                int count = (int) amount.get(newCause);
-                for (int i = 0; i < count; i++) {
-                    actual.accepts(newCause);
-                }
+            Sponge.getCauseStackManager().pushCause(this);
+            int count = (int) amount.get();
+            for (int i = 0; i < count; i++) {
+                actual.accepts();
             }
         }
     }
@@ -50,6 +45,7 @@ public class SimpleDropTableEntry implements DropTable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
+            .add("id", id)
             .add("actual", actual)
             .add("probability", probability)
             .add("amount", amount)

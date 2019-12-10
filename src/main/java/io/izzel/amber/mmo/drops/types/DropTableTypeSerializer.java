@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
 
+    @SuppressWarnings("DuplicatedCode")
     @Nullable
     @Override
     public DropTable deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) throws ObjectMappingException {
@@ -28,12 +29,13 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
             for (val item : value.getNode("items").getChildrenList()) {
                 val iterator = item.getChildrenList().listIterator();
                 if (iterator.hasNext()) {
+                    val index = iterator.nextIndex();
                     val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
                     val tableType = DropTableService.instance().getTypeById(tableNode.getKey().toString());
                     val table = tableNode.getValue().getValue(TypeToken.of(tableType));
                     Objects.requireNonNull(table);
                     val weight = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
-                    builder.add(new DynamicWeightedObject<>(table, weight));
+                    builder.add(new DynamicWeightedObject<>(String.format("%s.%d", path, index), table, weight));
                 }
             }
             return new WeightedDropTable(path, builder.build(), roll);
@@ -49,11 +51,11 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
                     Objects.requireNonNull(table);
                     val probability = iterator.hasNext() ? iterator.next().getDouble(1D) : 1D;
                     val amount = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class))
-                        : new AmountSerializer.Fixed(1);
-                    builder.add(new SimpleDropTableEntry(String.format("%s.%d", path, index), table, probability, amount));
+                        : Amount.fixed(1);
+                    builder.add(new ChanceTableEntry(String.format("%s.%d", path, index), table, probability, amount));
                 }
             }
-            return new SimpleDropTable(path, builder.build(), roll);
+            return new ChanceDropTable(path, builder.build(), roll);
         }
     }
 

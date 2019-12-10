@@ -9,6 +9,7 @@ import io.izzel.amber.mmo.drops.types.Amount;
 import io.izzel.amber.mmo.drops.types.AmountSerializer;
 import io.izzel.amber.mmo.drops.types.DropTableTypeSerializer;
 import io.izzel.amber.mmo.drops.types.internal.DropTableEntry;
+import io.izzel.amber.mmo.util.Propertied;
 import lombok.val;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -63,6 +64,12 @@ class DropTableServiceImpl implements DropTableService {
     @Override
     public Optional<DropTable> getDropTableById(String id) {
         return Optional.ofNullable(tables.get(id));
+    }
+
+    @Override
+    public Propertied queryDroptable(String query) {
+        //this.queryDroptable("xxxx.1.weight").setProperty("value", new );
+        return null;
     }
 
     @Override

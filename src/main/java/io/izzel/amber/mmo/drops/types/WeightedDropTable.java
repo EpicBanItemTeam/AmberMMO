@@ -1,9 +1,8 @@
 package io.izzel.amber.mmo.drops.types;
 
+import com.google.common.base.MoreObjects;
 import io.izzel.amber.mmo.drops.DropTable;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.util.weighted.WeightedObject;
 import org.spongepowered.api.util.weighted.WeightedTable;
 
@@ -22,12 +21,9 @@ public class WeightedDropTable implements DropTable {
     }
 
     @Override
-    public void accepts(Cause cause) {
-        try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-            frame.pushCause(this);
-            Cause newCause = frame.getCurrentCause();
-            dropTable.get(DropTable.RANDOM).forEach(it -> it.accepts(newCause));
-        }
+    public void accepts() {
+        Sponge.getCauseStackManager().pushCause(this);
+        dropTable.get(DropTable.RANDOM).forEach(DropTable::accepts);
     }
 
     @Override
@@ -37,6 +33,9 @@ public class WeightedDropTable implements DropTable {
 
     @Override
     public String toString() {
-        return dropTable.toString();
+        return MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("table", dropTable)
+            .toString();
     }
 }
