@@ -1,7 +1,7 @@
-package io.izzel.amber.mmo.drops.types;
+package io.izzel.amber.mmo.drops.types.tables.amounts;
 
 import com.google.common.reflect.TypeToken;
-import io.izzel.amber.mmo.drops.DropTable;
+import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
@@ -27,7 +27,7 @@ public class AmountSerializer implements TypeSerializer<Amount> {
                     return Amount.fixed(i);
                 } else if (list.size() == 2) {
                     double l = list.get(0), r = list.get(1);
-                    return Amount.ranged(l, r + 1); // todo r + 1
+                    return Amount.ranged(l, r);
                 }
                 break;
             case NULL: return Amount.fixed(1);
@@ -61,11 +61,6 @@ public class AmountSerializer implements TypeSerializer<Amount> {
         }
 
         @Override
-        public double expectation() {
-            return i;
-        }
-
-        @Override
         public String toString() {
             return String.valueOf(i);
         }
@@ -86,13 +81,8 @@ public class AmountSerializer implements TypeSerializer<Amount> {
         }
 
         @Override
-        public double expectation() {
-            return (r - l) / 2d + l;
-        }
-
-        @Override
         public String toString() {
-            return String.format("[%d, %d]", l, r);
+            return String.format("[%s, %s)", l, r);
         }
     }
 }

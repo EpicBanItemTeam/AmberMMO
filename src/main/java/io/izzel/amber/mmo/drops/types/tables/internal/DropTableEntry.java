@@ -1,9 +1,10 @@
-package io.izzel.amber.mmo.drops.types.internal;
+package io.izzel.amber.mmo.drops.types.tables.internal;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
-import io.izzel.amber.mmo.drops.DropTable;
 import io.izzel.amber.mmo.drops.DropTableService;
+import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
@@ -15,6 +16,7 @@ public class DropTableEntry implements DropTable {
     private final String table;
 
     public DropTableEntry(String table) {
+        Preconditions.checkNotNull(table);
         this.table = table;
     }
 

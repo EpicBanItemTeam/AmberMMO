@@ -1,19 +1,19 @@
 package io.izzel.amber.mmo.drops;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import io.izzel.amber.mmo.drops.types.Amount;
-import io.izzel.amber.mmo.drops.types.AmountSerializer;
-import io.izzel.amber.mmo.drops.types.DropTableTypeSerializer;
-import io.izzel.amber.mmo.drops.types.internal.DropTableEntry;
-import io.izzel.amber.mmo.util.Propertied;
+import io.izzel.amber.mmo.drops.types.DropRule;
+import io.izzel.amber.mmo.drops.types.DropRuleTypeSerializer;
+import io.izzel.amber.mmo.drops.types.tables.DropTable;
+import io.izzel.amber.mmo.drops.types.tables.DropTableTypeSerializer;
+import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
+import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
+import io.izzel.amber.mmo.drops.types.tables.internal.DropTableEntry;
 import lombok.val;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -22,13 +22,16 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Singleton
 class DropTableServiceImpl implements DropTableService {
 
     private final Path droptableFolder;
     private final Map<String, Class<?>> map = new HashMap<>();
+    private Map<String, Map<String, DropTable>> fileTables = new HashMap<>();
     private Map<String, DropTable> tables = new HashMap<>();
 
     @Inject
@@ -38,22 +41,9 @@ class DropTableServiceImpl implements DropTableService {
         TypeSerializers.getDefaultSerializers()
             .registerType(TypeToken.of(DropTable.class), new DropTableTypeSerializer())
             .registerType(TypeToken.of(Amount.class), new AmountSerializer())
-            .registerType(TypeToken.of(DropTableEntry.class), new DropTableEntry.Serializer());
+            .registerType(TypeToken.of(DropTableEntry.class), new DropTableEntry.Serializer())
+            .registerType(TypeToken.of(DropRule.class), new DropRuleTypeSerializer());
         game.getEventManager().registerListener(container, GamePostInitializationEvent.class, event -> reloadDropTables());
-    }
-
-    @Override
-    public <T extends DropTable> void registerDropTableType(String id, Class<T> cl, TypeSerializer<T> deserializer) {
-        Preconditions.checkArgument(!map.containsKey(id), "duplicate id");
-        Preconditions.checkNotNull(cl);
-        Preconditions.checkNotNull(deserializer);
-        map.put(id, cl);
-        TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(cl), deserializer);
-    }
-
-    @Override
-    public Set<String> availableTypes() {
-        return Collections.unmodifiableSet(map.keySet());
     }
 
     @SuppressWarnings("unchecked")
@@ -64,24 +54,30 @@ class DropTableServiceImpl implements DropTableService {
 
     @Override
     public Optional<DropTable> getDropTableById(String id) {
-        return Optional.ofNullable(tables.get(id));
-    }
-
-    @Override
-    public Propertied queryDroptable(String query) {
-        //this.queryDroptable("xxxx.1.weight").setProperty("value", new );
-        return null;
+        String[] split = id.split("\\.");
+        if (split.length > 1) {
+            return Optional.ofNullable(
+                Optional.ofNullable(fileTables.get(split[0]))
+                    .map(it -> it.get(split[1]))
+                    .orElseGet(() -> tables.get(split[0]))
+            );
+        } else {
+            return Optional.ofNullable(tables.get(id));
+        }
     }
 
     @Override
     public void reloadDropTables() throws Exception {
         this.tables.clear();
+        this.fileTables.clear();
         if (!Files.exists(droptableFolder)) Files.createDirectories(droptableFolder);
         val iterator = Files.walk(droptableFolder).iterator();
         while (iterator.hasNext()) {
             Path path = iterator.next();
             if (!Files.isDirectory(path)) {
-                this.tables.putAll(load(path));
+                Map<String, DropTable> load = load(path);
+                this.tables.putAll(load);
+                this.fileTables.put(path.getFileName().toString().replaceFirst("[.][^.]+$", ""), load);
             }
         }
     }

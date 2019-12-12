@@ -1,7 +1,6 @@
-package io.izzel.amber.mmo.drops.types;
+package io.izzel.amber.mmo.drops.types.tables;
 
 import com.google.common.base.MoreObjects;
-import io.izzel.amber.mmo.drops.DropTable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.util.weighted.WeightedObject;
 import org.spongepowered.api.util.weighted.WeightedTable;

@@ -1,6 +1,6 @@
-package io.izzel.amber.mmo.drops.types.internal;
+package io.izzel.amber.mmo.drops.types.tables.internal;
 
-import io.izzel.amber.mmo.drops.DropTable;
+import io.izzel.amber.mmo.drops.types.tables.DropTable;
 
 public class VanillaEntry implements DropTable {
 

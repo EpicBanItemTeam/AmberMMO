@@ -1,10 +1,8 @@
-package io.izzel.amber.mmo.drops.types;
+package io.izzel.amber.mmo.drops.types.tables.amounts;
 
 public interface Amount {
 
     double get();
-
-    double expectation();
 
     static Amount fixed(double d) {
         return AmountSerializer.fixed(d);

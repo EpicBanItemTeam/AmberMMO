@@ -1,8 +1,8 @@
-package io.izzel.amber.mmo.drops.types;
+package io.izzel.amber.mmo.drops.types.tables;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import io.izzel.amber.mmo.drops.DropTable;
+import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import org.spongepowered.api.Sponge;
 
 public class ChanceTableEntry implements DropTable {
@@ -11,14 +11,14 @@ public class ChanceTableEntry implements DropTable {
 
     private final DropTable actual;
 
-    private final double probability;
+    private final Amount probability;
 
     private final Amount amount;
 
-    ChanceTableEntry(String id, DropTable actual, double probability, Amount amount) {
+    ChanceTableEntry(String id, DropTable actual, Amount probability, Amount amount) {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(actual);
-        Preconditions.checkArgument(probability >= 0 && probability <= 1, "probability should be in [0, 1]");
+        Preconditions.checkNotNull(probability);
         Preconditions.checkNotNull(amount);
         this.id = id;
         this.actual = actual;
@@ -28,12 +28,16 @@ public class ChanceTableEntry implements DropTable {
 
     @Override
     public void accepts() {
-        if (DropTable.RANDOM.nextDouble() < probability) {
+        double d = probability.get();
+        if (DropTable.RANDOM.nextDouble() < d) {
             Sponge.getCauseStackManager().pushCause(this);
-            int count = (int) amount.get();
-            for (int i = 0; i < count; i++) {
-                actual.accepts();
-            }
+            do {
+                int count = (int) amount.get();
+                for (int i = 0; i < count; i++) {
+                    actual.accepts();
+                }
+                d -= 1D;
+            } while (DropTable.RANDOM.nextDouble() < d);
         }
     }
 

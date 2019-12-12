@@ -1,4 +1,4 @@
-package io.izzel.amber.mmo.drops;
+package io.izzel.amber.mmo.drops.types.tables;
 
 import io.izzel.amber.mmo.util.Identified;
 
