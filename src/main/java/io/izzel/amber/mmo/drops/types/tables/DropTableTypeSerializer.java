@@ -35,7 +35,7 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
                         val index = iterator.nextIndex();
                         val subId = String.format("%s.%d", path, index);
                         val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
-                        val tableType = DropTableService.instance().getTypeById(tableNode.getKey().toString());
+                        val tableType = DropTableService.instance().getDropTableTypeById(tableNode.getKey().toString());
                         val table = tableNode.getValue().getValue(TypeToken.of(tableType));
                         Objects.requireNonNull(table);
                         val weight = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
@@ -51,7 +51,7 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
                         val index = iterator.nextIndex();
                         val subId = String.format("%s.%d", path, index);
                         val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
-                        val tableType = DropTableService.instance().getTypeById(tableNode.getKey().toString());
+                        val tableType = DropTableService.instance().getDropTableTypeById(tableNode.getKey().toString());
                         val table = tableNode.getValue().getValue(TypeToken.of(tableType));
                         Objects.requireNonNull(table);
                         val probability = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);

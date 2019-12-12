@@ -7,13 +7,13 @@ import io.izzel.amber.mmo.drops.types.triggers.DropTrigger;
 
 import java.util.List;
 
-public class SimpleDropRule implements DropRule {
+class SimpleDropRule implements DropRule {
 
     private final List<DropTrigger> triggers;
     private final List<DropCondition> conditions;
     private final List<DropTable> actions;
 
-    public SimpleDropRule(List<DropTrigger> triggers, List<DropCondition> conditions, List<DropTable> actions) {
+    SimpleDropRule(List<DropTrigger> triggers, List<DropCondition> conditions, List<DropTable> actions) {
         this.triggers = triggers;
         this.conditions = conditions;
         this.actions = actions;
