@@ -32,7 +32,7 @@ public interface CooldownCondition extends DropCondition {
                 return new Global(tick);
             } else if (nodeType.equalsIgnoreCase("player")) {
                 val tick = node.getValue().getNode("tick").getValue(TypeToken.of(Amount.class));
-                val id = joinPath(value);
+                val id = node.getValue().getNode("id").getString(joinPath(value));
                 return new Player(tick, id);
             }
             return null;

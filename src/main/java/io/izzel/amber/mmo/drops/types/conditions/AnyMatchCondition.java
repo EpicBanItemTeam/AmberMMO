@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.types.conditions;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -20,6 +21,13 @@ public class AnyMatchCondition implements CooldownCondition {
     @Override
     public boolean test() {
         return conditions.stream().anyMatch(DropCondition::test);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("conditions", conditions)
+            .toString();
     }
 
     public static class Serializer implements TypeSerializer<AnyMatchCondition> {

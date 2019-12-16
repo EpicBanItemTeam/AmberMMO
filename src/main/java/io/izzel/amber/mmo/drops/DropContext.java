@@ -1,7 +1,10 @@
 package io.izzel.amber.mmo.drops;
 
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.*;
 
@@ -57,6 +60,9 @@ public class DropContext {
     public static class Key<T> {
 
         public static final Key<Entity> OWNER = new Key<>("owner");
+        public static final Key<Location<World>> LOCATION = new Key<>("location");
+        public static final Key<BlockState> BLOCK = new Key<>("block");
+        public static final Key<Entity> DAMAGEE = new Key<>("damagee");
 
         private final String key;
 

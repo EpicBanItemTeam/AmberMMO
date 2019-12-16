@@ -14,6 +14,7 @@ import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
 import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
 import io.izzel.amber.mmo.drops.types.triggers.DropTrigger;
 import io.izzel.amber.mmo.drops.types.triggers.DropTriggerTypeSerializer;
+import io.izzel.amber.mmo.drops.types.triggers.TimerTrigger;
 import lombok.val;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -79,7 +80,7 @@ class DropTableServiceImpl implements DropTableService {
         game.getEventManager().registerListener(container, GameStartedServerEvent.class, event -> {
             for (DropRule rule : this.rules.values()) {
                 for (DropTrigger trigger : rule.getTriggers()) {
-                    trigger.set(rule);
+                    trigger.set(rule::apply);
                 }
             }
         });
@@ -87,6 +88,8 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropTableType("drop-table", DropTableEntry.class, new DropTableEntry.Serializer());
             event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
+            event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
+            event.registerDropTriggerType("timer", TimerTrigger.class, new TimerTrigger.Serializer());
         });
     }
 
