@@ -6,13 +6,12 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.izzel.amber.mmo.drops.types.DropRule;
 import io.izzel.amber.mmo.drops.types.DropRuleTypeSerializer;
-import io.izzel.amber.mmo.drops.types.conditions.DropCondition;
-import io.izzel.amber.mmo.drops.types.conditions.DropConditionTypeSerializer;
+import io.izzel.amber.mmo.drops.types.conditions.*;
 import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import io.izzel.amber.mmo.drops.types.tables.DropTableTypeSerializer;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
-import io.izzel.amber.mmo.drops.types.tables.internal.DropTableEntry;
+import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
 import io.izzel.amber.mmo.drops.types.triggers.DropTrigger;
 import io.izzel.amber.mmo.drops.types.triggers.DropTriggerTypeSerializer;
 import lombok.val;
@@ -22,8 +21,10 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -57,10 +58,18 @@ class DropTableServiceImpl implements DropTableService {
         TypeSerializers.getDefaultSerializers()
             .registerType(TypeToken.of(DropTable.class), new DropTableTypeSerializer())
             .registerType(TypeToken.of(Amount.class), new AmountSerializer())
-            .registerType(TypeToken.of(DropTableEntry.class), new DropTableEntry.Serializer())
             .registerType(TypeToken.of(DropRule.class), new DropRuleTypeSerializer())
             .registerType(TypeToken.of(DropTrigger.class), new DropTriggerTypeSerializer())
             .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer());
+        game.getEventManager().registerListener(container, GameInitializationEvent.class, event -> {
+            DataRegistration.builder()
+                .dataClass(DropCooldownData.Mutable.class)
+                .immutableClass(DropCooldownData.Immutable.class)
+                .builder(new DropCooldownData.Builder())
+                .id("ambermmo_cd")
+                .name("AmberMMO Cooldown Data")
+                .build();
+        });
         game.getEventManager().registerListener(container, GamePostInitializationEvent.class, event -> {
             try (CauseStackManager.StackFrame frame = game.getCauseStackManager().pushCauseFrame()) {
                 game.getEventManager().post(new RegistryImpl(frame.getCurrentCause()));
@@ -73,6 +82,11 @@ class DropTableServiceImpl implements DropTableService {
                     trigger.set(rule);
                 }
             }
+        });
+        game.getEventManager().registerListener(container, DropTableService.Registry.class, event -> {
+            event.registerDropTableType("drop-table", DropTableEntry.class, new DropTableEntry.Serializer());
+            event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
+            event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
         });
     }
 

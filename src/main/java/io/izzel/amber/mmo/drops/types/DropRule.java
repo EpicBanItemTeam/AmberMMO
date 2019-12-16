@@ -14,4 +14,10 @@ public interface DropRule {
 
     List<DropTable> getActions();
 
+    default void apply() {
+        if (getConditions().stream().allMatch(DropCondition::test)) {
+            getActions().forEach(DropTable::accepts);
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package io.izzel.amber.mmo.drops.types.tables.internal;
+package io.izzel.amber.mmo.drops.types.tables.internals;
 
 import io.izzel.amber.mmo.drops.types.tables.DropTable;
 

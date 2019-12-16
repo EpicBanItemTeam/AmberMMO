@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropTableService;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
-import io.izzel.amber.mmo.drops.types.tables.internal.DropTableEntry;
+import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
 import lombok.val;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ValueType;
