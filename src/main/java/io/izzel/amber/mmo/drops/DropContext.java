@@ -15,10 +15,28 @@ public class DropContext {
     private final LinkedList<ItemStackSnapshot> drops = new LinkedList<>();
     private boolean overrideDefault = false;
 
-    public <T> DropContext set(T value, Key<? super T>... keys) {
-        for (Key<? super T> key : keys) {
-            map.put(key, value);
+    public <T> DropContext set(T value, Key<? super T> key) {
+        map.put(key, value);
+        return this;
+    }
+
+    public <T> DropContext set(T value, Key<? super T> key, Key<?>... keys) {
+        map.put(key, value);
+        for (Key<?> k : keys) {
+            map.put(k, value);
         }
+        return this;
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public <T> DropContext set(Optional<T> value, Key<? super T> key, Key<?>... keys) {
+        value.ifPresent(t -> set(t, key, keys));
+        return this;
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public <T> DropContext set(Optional<T> value, Key<? super T> key) {
+        value.ifPresent(t -> set(t, key));
         return this;
     }
 

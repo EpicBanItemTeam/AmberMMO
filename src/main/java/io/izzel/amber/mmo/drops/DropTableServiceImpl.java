@@ -12,9 +12,7 @@ import io.izzel.amber.mmo.drops.types.tables.DropTableTypeSerializer;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
 import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
-import io.izzel.amber.mmo.drops.types.triggers.DropTrigger;
-import io.izzel.amber.mmo.drops.types.triggers.DropTriggerTypeSerializer;
-import io.izzel.amber.mmo.drops.types.triggers.TimerTrigger;
+import io.izzel.amber.mmo.drops.types.triggers.*;
 import lombok.val;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -91,7 +89,10 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
             event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
             event.registerDropConditionType("in-region", InRegionCondition.class, new InRegionCondition.Serializer());
+            event.registerDropConditionType("date", DateCondition.class, new DateCondition.Serializer());
             event.registerDropTriggerType("timer", TimerTrigger.class, new TimerTrigger.Serializer());
+            event.registerDropTriggerType("block-break", BlockBreakTrigger.class, new BlockBreakTrigger.Serializer());
+            event.registerDropTriggerType("entity-kill", EntityKillTrigger.class, new EntityKillTrigger.Serializer());
         });
     }
 
