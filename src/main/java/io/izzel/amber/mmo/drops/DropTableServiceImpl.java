@@ -61,7 +61,8 @@ class DropTableServiceImpl implements DropTableService {
             .registerType(TypeToken.of(Amount.class), new AmountSerializer())
             .registerType(TypeToken.of(DropRule.class), new DropRuleTypeSerializer())
             .registerType(TypeToken.of(DropTrigger.class), new DropTriggerTypeSerializer())
-            .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer());
+            .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer())
+            .registerType(TypeToken.of(InRegionCondition.Coord.class), new InRegionCondition.Coord.Serializer());
         game.getEventManager().registerListener(container, GameInitializationEvent.class, event -> {
             DataRegistration.builder()
                 .dataClass(DropCooldownData.Mutable.class)
@@ -89,6 +90,7 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
             event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
+            event.registerDropConditionType("in-region", InRegionCondition.class, new InRegionCondition.Serializer());
             event.registerDropTriggerType("timer", TimerTrigger.class, new TimerTrigger.Serializer());
         });
     }

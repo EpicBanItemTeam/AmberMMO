@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.types.triggers;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -38,6 +39,14 @@ public class TimerTrigger implements DropTrigger {
             task.cancel();
             task = null;
         } else throw new IllegalStateException();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("delay", delay)
+            .add("period", period)
+            .toString();
     }
 
     public static class Serializer implements TypeSerializer<TimerTrigger> {
