@@ -11,19 +11,22 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class DropContext {
 
-    private final Map<Object, Object> map = new HashMap<>();
+    private final Map<Key<?>, Object> keyMap = new HashMap<>();
+    private final Map<String, Object> strMap = new HashMap<>();
     private final LinkedList<ItemStackSnapshot> drops = new LinkedList<>();
     private boolean overrideDefault = false;
 
     public <T> DropContext set(T value, Key<? super T> key) {
-        map.put(key, value);
+        keyMap.put(key, value);
+        strMap.put(key.key, value);
         return this;
     }
 
     public <T> DropContext set(T value, Key<? super T> key, Key<?>... keys) {
-        map.put(key, value);
+        set(value, key);
         for (Key<?> k : keys) {
-            map.put(k, value);
+            keyMap.put(k, value);
+            strMap.put(k.key, value);
         }
         return this;
     }
@@ -40,19 +43,12 @@ public class DropContext {
         return this;
     }
 
-    public DropContext set(Object value, String... keys) {
-        for (String key : keys) {
-            map.put(key, value);
-        }
-        return this;
-    }
-
     public <T> Optional<T> get(Key<T> key) {
-        return Optional.ofNullable((T) map.get(key));
+        return Optional.ofNullable((T) keyMap.get(key));
     }
 
     public <T> Optional<T> get(String key) {
-        return Optional.ofNullable((T) map.get(key));
+        return Optional.ofNullable((T) strMap.get(key));
     }
 
     public void addDrop(ItemStackSnapshot item) {
@@ -60,6 +56,12 @@ public class DropContext {
     }
 
     public void resetDrops() {
+        this.drops.clear();
+    }
+
+    public void resetContext() {
+        this.strMap.clear();
+        this.keyMap.clear();
         this.drops.clear();
     }
 
@@ -75,7 +77,7 @@ public class DropContext {
         return overrideDefault;
     }
 
-    public static class Key<T> {
+    public static final class Key<T> {
 
         public static final Key<Entity> OWNER = new Key<>("owner");
         public static final Key<Location<World>> LOCATION = new Key<>("location");
@@ -86,17 +88,6 @@ public class DropContext {
 
         public Key(String key) {
             this.key = key;
-        }
-
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-        @Override
-        public boolean equals(Object o) {
-            return key.equals(o);
-        }
-
-        @Override
-        public int hashCode() {
-            return key.hashCode();
         }
 
     }

@@ -11,8 +11,9 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.EventListener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
-import org.spongepowered.api.event.item.inventory.DropItemEvent;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class EntityKillTrigger implements DropTrigger {
 
     private final EntityType entityType;
 
-    private EventListener<DropItemEvent.Destruct> listener;
+    private EventListener<DestructEntityEvent.Death> listener;
 
     public EntityKillTrigger(EntityType entityType) {
         this.entityType = entityType;
@@ -31,24 +32,24 @@ public class EntityKillTrigger implements DropTrigger {
     public void set(Runnable action) {
         if (listener == null) {
             listener = event -> {
-                if (event.getSource() instanceof EntityDamageSource) {
+                if (!event.isCancelled() && event.getSource() instanceof EntityDamageSource) {
                     EntityDamageSource source = (EntityDamageSource) event.getSource();
-                    Sponge.getCauseStackManager().getCurrentCause().first(Entity.class)
-                        .filter(it -> entityType == null || it.getType() == entityType)
-                        .ifPresent(entity -> {
-                            try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                                frame.pushCause(new DropContext()
-                                    .set(source.getSource(), DropContext.Key.OWNER)
-                                    .set(entity, DropContext.Key.DAMAGEE)
-                                    .set(entity.getLocation(), DropContext.Key.LOCATION));
-                                action.run();
-                            }
-                        });
+                    Entity entity = event.getTargetEntity();
+                    if (entity.getType() == entityType) {
+                        try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                            frame.pushCause(new DropContext()
+                                .set(source.getSource(), DropContext.Key.OWNER)
+                                .set(entity, DropContext.Key.DAMAGEE)
+                                .set(entity.getLocation(), DropContext.Key.LOCATION));
+                            action.run();
+                        }
+                    }
                 }
             };
             Sponge.getEventManager().registerListener(
                 Sponge.getCauseStackManager().getCurrentCause().first(PluginContainer.class).orElseThrow(IllegalStateException::new),
-                DropItemEvent.Destruct.class,
+                DestructEntityEvent.Death.class,
+                Order.BEFORE_POST,
                 listener
             );
         } else throw new IllegalStateException();
