@@ -15,6 +15,7 @@ import io.izzel.amber.mmo.drops.types.tables.DropTableTypeSerializer;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
 import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
+import io.izzel.amber.mmo.drops.types.tables.internals.VanillaEntry;
 import io.izzel.amber.mmo.drops.types.triggers.*;
 import lombok.val;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -93,6 +94,7 @@ class DropTableServiceImpl implements DropTableService {
         });
         game.getEventManager().registerListener(container, DropTableService.Registry.class, event -> {
             event.registerDropTableType("drop-table", DropTableEntry.class, new DropTableEntry.Serializer());
+            event.registerDropTableType("vanilla", VanillaEntry.class, new VanillaEntry.Serializer());
             event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
             event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
