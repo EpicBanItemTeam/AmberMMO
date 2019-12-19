@@ -15,9 +15,9 @@
 | `cooldown.player` | 玩家冷却 | `tick` 冷却时间 <br> `id` （可选）用相同 id 在多个掉落表项中使用同一组冷却 |
 | `any` | 满足任意一个条件 | ```{any=[{条件1}, {条件2}, ...]}``` |
 | `not` | 不满足条件 | ```{not.cooldown.xxxx{...}}``` |
-| `in-region.coord` | 在区域中 | `from`, `to` <br> ```{in-region.coord{from=['world',x,y,z],to=[world,x,y,z]}} ``` |
+| `in-region.coord` | 在区域中 | `from`, `to` 区域的起点和终点（包含） <br> ```{in-region.coord{from=['world',x,y,z],to=[world,x,y,z]}} ``` |
 | `in-region.world` | 在指定世界 | ```{in-region.world='world'}``` <br> ```{in-region.world=['world1','world2']}``` |
-| `date.between` | 在指定时间段 | `from`, `to` <br> 时间格式可以是 `时:分:秒`, `年-月-日`, `年-月-日 时:分:秒` 秒是可选的 |
+| `date.between` | 在指定时间段 | `from`, `to` 时间段的起点（包含）终点（不包含） <br> 时间格式可以是 `时:分:秒`, `年-月-日`, `年-月-日 时:分:秒` 秒是可选的 |
 | `date.in-week`| 在某个星期日内 | ```{date.in-week=[1,3,5,7]}``` <br> 周一至周日使用 1 至 7 表示 |
 
 ## 动作
