@@ -1,5 +1,8 @@
-package io.izzel.amber.mmo.drops.types.conditions;
+package io.izzel.amber.mmo.drops.data;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+import lombok.val;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataQuery;
@@ -16,20 +19,22 @@ import org.spongepowered.plugin.meta.util.NonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.DoubleUnaryOperator;
 
 @NonnullByDefault
-public class DropCooldownData {
+public class DropPlayerData {
 
     public static class Mutable extends AbstractData<Mutable, Immutable> {
 
-        private final Map<String, Long> map = new HashMap<>();
+        private final Map<String, Long> cooldown = new HashMap<>();
+        private final Multimap<String, AmountTempModifier> tempModifier = MultimapBuilder.hashKeys().arrayListValues().build();
 
-        public void put(String key, long value) {
-            this.map.put(key, value);
+        public void putCooldown(String key, long value) {
+            this.cooldown.put(key, value);
         }
 
-        public long get(String key) {
-            return map.getOrDefault(key, 0L);
+        public long getCooldown(String key) {
+            return cooldown.getOrDefault(key, 0L);
         }
 
         @Override
@@ -40,7 +45,8 @@ public class DropCooldownData {
         public Optional<Mutable> fill(DataHolder dataHolder, MergeFunction overlap) {
             Mutable original = dataHolder.get(Mutable.class).orElse(null);
             Mutable merge = overlap.merge(original, this);
-            merge.map.forEach(this.map::put);
+            this.cooldown.putAll(merge.cooldown);
+            this.tempModifier.putAll(merge.tempModifier);
             return Optional.of(this);
         }
 
@@ -52,14 +58,16 @@ public class DropCooldownData {
         @Override
         public Mutable copy() {
             Mutable mutable = new Mutable();
-            mutable.map.putAll(this.map);
+            mutable.cooldown.putAll(this.cooldown);
+            mutable.tempModifier.putAll(this.tempModifier);
             return mutable;
         }
 
         @Override
         public Immutable asImmutable() {
             Immutable immutable = new Immutable();
-            immutable.map.putAll(this.map);
+            immutable.cooldown.putAll(this.cooldown);
+            immutable.tempModifier.putAll(this.tempModifier);
             return immutable;
         }
 
@@ -70,13 +78,14 @@ public class DropCooldownData {
 
         @Override
         protected DataContainer fillContainer(DataContainer dataContainer) {
-            return DropCooldownData.fillContainer(super.fillContainer(dataContainer), map);
+            return DropPlayerData.fillContainer(super.fillContainer(dataContainer), cooldown, tempModifier);
         }
     }
 
     public static class Immutable extends AbstractImmutableData<Immutable, Mutable> {
 
-        private final Map<String, Long> map = new HashMap<>();
+        private final Map<String, Long> cooldown = new HashMap<>();
+        private final Multimap<String, AmountTempModifier> tempModifier = MultimapBuilder.hashKeys().arrayListValues().build();
 
         @Override
         protected void registerGetters() {
@@ -86,7 +95,8 @@ public class DropCooldownData {
         @Override
         public Mutable asMutable() {
             Mutable mutable = new Mutable();
-            mutable.map.putAll(this.map);
+            mutable.cooldown.putAll(this.cooldown);
+            mutable.tempModifier.putAll(this.tempModifier);
             return mutable;
         }
 
@@ -97,7 +107,7 @@ public class DropCooldownData {
 
         @Override
         protected DataContainer fillContainer(DataContainer dataContainer) {
-            return DropCooldownData.fillContainer(super.fillContainer(dataContainer), map);
+            return DropPlayerData.fillContainer(super.fillContainer(dataContainer), cooldown, tempModifier);
         }
     }
 
@@ -123,26 +133,48 @@ public class DropCooldownData {
         }
     }
 
-    private static final DataQuery MAP = DataQuery.of("Map");
+    private static final DataQuery COOLDOWN = DataQuery.of("Cooldown");
+    private static final DataQuery MODIFIER = DataQuery.of("TempModifier");
 
     @SuppressWarnings("unchecked")
     private static Mutable fromContainer(DataView container, Mutable data) {
-        container.getMap(MAP).ifPresent(it -> data.map.putAll((Map<? extends String, ? extends Long>) it));
+        container.getMap(COOLDOWN).ifPresent(it -> data.cooldown.putAll((Map<? extends String, ? extends Long>) it));
+        container.getObject(MODIFIER, TempModifierDataTranslator.CLASS).ifPresent(data.tempModifier::putAll);
         return data;
     }
 
-    private static DataContainer fillContainer(DataContainer container, Map<String, Long> map) {
-        container.set(MAP, map);
+    private static DataContainer fillContainer(DataContainer container, Map<String, Long> cooldown, Multimap<String, AmountTempModifier> tempModifier) {
+        container.set(COOLDOWN, cooldown);
+        container.set(MODIFIER, tempModifier);
         return container;
     }
 
-    public static long get(Entity entity, String key) {
-        return entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new).get(key);
+    public static long getCooldown(Entity entity, String key) {
+        return entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new).getCooldown(key);
     }
 
-    public static void update(Entity entity, String key, long value) {
+    public static void updateCooldown(Entity entity, String key, long value) {
         Mutable mutable = entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new);
-        mutable.put(key, value);
+        mutable.putCooldown(key, value);
         entity.offer(mutable);
     }
+
+    public static DoubleUnaryOperator getModifiers(Entity entity, String key) {
+        Mutable mutable = entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new);
+        DoubleUnaryOperator ret = DoubleUnaryOperator.identity();
+        val iterator = mutable.tempModifier.get(key).iterator();
+        while (iterator.hasNext()) {
+            AmountTempModifier modifier = iterator.next();
+            if (System.currentTimeMillis() > modifier.getTimeout()) iterator.remove();
+            else ret = ret.andThen(modifier.getOperator());
+        }
+        return ret;
+    }
+
+    public static void addModifier(Entity entity, String key, AmountTempModifier modifier) {
+        Mutable mutable = entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new);
+        mutable.tempModifier.put(key, modifier);
+        entity.offer(mutable);
+    }
+
 }

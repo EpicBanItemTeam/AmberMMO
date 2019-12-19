@@ -3,6 +3,7 @@ package io.izzel.amber.mmo.drops.types.conditions;
 import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropContext;
+import io.izzel.amber.mmo.drops.data.DropPlayerData;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import lombok.val;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -92,9 +93,9 @@ public interface CooldownCondition extends DropCondition {
                     if (entityOptional.isPresent()) {
                         Entity entity = entityOptional.get();
                         long time = (long) (tick.get() * 20D);
-                        long last = DropCooldownData.get(entity, id);
+                        long last = DropPlayerData.getCooldown(entity, id);
                         if (System.currentTimeMillis() - last > time) {
-                            DropCooldownData.update(entity, id, System.currentTimeMillis());
+                            DropPlayerData.updateCooldown(entity, id, System.currentTimeMillis());
                             return true;
                         }
                     }

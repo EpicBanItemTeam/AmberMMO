@@ -22,7 +22,7 @@ public class NotCondition implements DropCondition {
 
     @Override
     public String toString() {
-        return "!" + condition.toString();
+        return "Not." + condition.toString();
     }
 
     public static class Serializer implements TypeSerializer<NotCondition> {

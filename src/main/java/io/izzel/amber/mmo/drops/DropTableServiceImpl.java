@@ -4,6 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.izzel.amber.mmo.drops.data.AmountTempModifier;
+import io.izzel.amber.mmo.drops.data.DropPlayerData;
+import io.izzel.amber.mmo.drops.data.TempModifierDataTranslator;
 import io.izzel.amber.mmo.drops.types.DropRule;
 import io.izzel.amber.mmo.drops.types.DropRuleTypeSerializer;
 import io.izzel.amber.mmo.drops.types.conditions.*;
@@ -21,8 +24,11 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataRegistration;
+import org.spongepowered.api.data.persistence.DataTranslator;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -34,6 +40,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.DoubleUnaryOperator;
 
 @SuppressWarnings({"unchecked", "DuplicatedCode"})
 @Singleton
@@ -60,12 +67,16 @@ class DropTableServiceImpl implements DropTableService {
             .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer());
         game.getEventManager().registerListener(container, GameInitializationEvent.class, event -> {
             DataRegistration.builder()
-                .dataClass(DropCooldownData.Mutable.class)
-                .immutableClass(DropCooldownData.Immutable.class)
-                .builder(new DropCooldownData.Builder())
+                .dataClass(DropPlayerData.Mutable.class)
+                .immutableClass(DropPlayerData.Immutable.class)
+                .builder(new DropPlayerData.Builder())
                 .id("ambermmo_cd")
                 .name("AmberMMO Cooldown Data")
                 .build();
+            game.getDataManager().registerBuilder(AmountTempModifier.class, new AmountTempModifier.Builder());
+        });
+        game.getEventManager().registerListener(container, new TypeToken<GameRegistryEvent.Register<DataTranslator<?>>>() {}, event -> {
+            event.register(new TempModifierDataTranslator());
         });
         game.getEventManager().registerListener(container, GamePostInitializationEvent.class, event -> {
             try (CauseStackManager.StackFrame frame = game.getCauseStackManager().pushCauseFrame()) {
@@ -143,6 +154,16 @@ class DropTableServiceImpl implements DropTableService {
                 this.rules.putAll(load);
             }
         }
+    }
+
+    @Override
+    public void addModifier(Entity entity, String amount, AmountTempModifier modifier) {
+        DropPlayerData.addModifier(entity, amount, modifier);
+    }
+
+    @Override
+    public DoubleUnaryOperator getModifier(Entity entity, String amount) {
+        return DropPlayerData.getModifiers(entity, amount);
     }
 
     private <T> Map<String, T> load(Path path, TypeToken<T> token) throws Exception {
