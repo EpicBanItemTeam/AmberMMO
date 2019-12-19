@@ -12,7 +12,12 @@ import org.spongepowered.api.util.Coerce;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 
 public interface DateCondition extends DropCondition {
 
@@ -45,8 +50,14 @@ public interface DateCondition extends DropCondition {
                 } catch (Exception ignored) {
                 }
                 try {
-                    LocalDateTime fromDateTime = LocalDateTime.parse(from);
-                    LocalDateTime toDateTime = LocalDateTime.parse(to);
+                    DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                        .parseCaseInsensitive()
+                        .append(ISO_LOCAL_DATE)
+                        .appendLiteral(' ')
+                        .append(ISO_LOCAL_TIME)
+                        .toFormatter();
+                    LocalDateTime fromDateTime = LocalDateTime.parse(from, formatter);
+                    LocalDateTime toDateTime = LocalDateTime.parse(to, formatter);
                     return () -> {
                         LocalDateTime now = LocalDateTime.now();
                         return !now.isBefore(fromDateTime) && now.isBefore(toDateTime);
