@@ -20,10 +20,6 @@ configurations {
 repositories {
     mavenCentral()
     maven {
-        name = 'bstats-repo'
-        url = 'http://repo.bstats.org/content/repositories/releases'
-    }
-    maven {
         name = 'jitpack'
         url = 'https://jitpack.io'
     }
