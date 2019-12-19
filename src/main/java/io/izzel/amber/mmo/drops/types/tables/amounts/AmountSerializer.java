@@ -3,13 +3,17 @@ package io.izzel.amber.mmo.drops.types.tables.amounts;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ValueType;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.util.Coerce;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AmountSerializer implements TypeSerializer<Amount> {
 
@@ -21,13 +25,24 @@ public class AmountSerializer implements TypeSerializer<Amount> {
                 return Amount.fixed(Coerce.toDouble(value.getValue()));
             case MAP: break;
             case LIST:
-                List<Double> list = value.getList(Coerce::toDouble);
-                if (list.size() == 1) {
-                    double i = list.get(0);
-                    return Amount.fixed(i);
-                } else if (list.size() == 2) {
-                    double l = list.get(0), r = list.get(1);
-                    return Amount.ranged(l, r);
+                ConfigurationNode node = value.getChildrenList().iterator().next();
+                if (node.getValueType() == ValueType.LIST) {
+                    List<Double> list = node.getList(Coerce::toDouble);
+                    if (list.size() == 2) {
+                        double l = list.get(0), r = list.get(1);
+                        Amount base = Amount.ranged(l, r);
+                        return new DynamicAmount(joinPath(value), base);
+                    } else throw new ObjectMappingException();
+                } else {
+                    List<Double> list = value.getList(Coerce::toDouble);
+                    if (list.size() == 1) {
+                        double i = list.get(0);
+                        Amount base = Amount.fixed(i);
+                        return new DynamicAmount(joinPath(value), base);
+                    } else if (list.size() == 2) {
+                        double l = list.get(0), r = list.get(1);
+                        return Amount.ranged(l, r);
+                    }
                 }
                 break;
             case NULL: return Amount.fixed(1);
@@ -37,6 +52,10 @@ public class AmountSerializer implements TypeSerializer<Amount> {
 
     @Override
     public void serialize(@NonNull TypeToken<?> type, @Nullable Amount obj, @NonNull ConfigurationNode value) {
+    }
+
+    private static String joinPath(ConfigurationNode node) {
+        return Arrays.stream(node.getPath()).map(Objects::toString).collect(Collectors.joining("."));
     }
 
     static Amount fixed(double d) {

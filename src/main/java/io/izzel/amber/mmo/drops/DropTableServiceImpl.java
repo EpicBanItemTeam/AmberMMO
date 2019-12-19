@@ -44,9 +44,7 @@ class DropTableServiceImpl implements DropTableService {
     private final Map<String, Class<?>> dropTriggerTypes = new HashMap<>();
     private final Map<String, Class<?>> dropConditionTypes = new HashMap<>();
 
-    private Map<String, Map<String, DropTable>> fileTables = new HashMap<>();
     private Map<String, DropTable> tables = new HashMap<>();
-    private Map<String, Map<String, DropRule>> fileRules = new HashMap<>();
     private Map<String, DropRule> rules = new HashMap<>();
 
     @Inject
@@ -59,8 +57,7 @@ class DropTableServiceImpl implements DropTableService {
             .registerType(TypeToken.of(Amount.class), new AmountSerializer())
             .registerType(TypeToken.of(DropRule.class), new DropRuleTypeSerializer())
             .registerType(TypeToken.of(DropTrigger.class), new DropTriggerTypeSerializer())
-            .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer())
-            .registerType(TypeToken.of(InRegionCondition.Coord.class), new InRegionCondition.Coord.Serializer());
+            .registerType(TypeToken.of(DropCondition.class), new DropConditionTypeSerializer());
         game.getEventManager().registerListener(container, GameInitializationEvent.class, event -> {
             DataRegistration.builder()
                 .dataClass(DropCooldownData.Mutable.class)
@@ -113,30 +110,12 @@ class DropTableServiceImpl implements DropTableService {
 
     @Override
     public Optional<DropTable> getDropTableById(String id) {
-        String[] split = id.split("\\.");
-        if (split.length > 1) {
-            return Optional.ofNullable(
-                Optional.ofNullable(fileTables.get(split[0]))
-                    .map(it -> it.get(split[1]))
-                    .orElseGet(() -> tables.get(split[0]))
-            );
-        } else {
-            return Optional.ofNullable(tables.get(id));
-        }
+        return Optional.ofNullable(tables.get(id));
     }
 
     @Override
     public Optional<DropRule> getDropRuleById(String id) {
-        String[] split = id.split("\\.");
-        if (split.length > 1) {
-            return Optional.ofNullable(
-                Optional.ofNullable(fileRules.get(split[0]))
-                    .map(it -> it.get(split[1]))
-                    .orElseGet(() -> rules.get(split[0]))
-            );
-        } else {
-            return Optional.ofNullable(rules.get(id));
-        }
+        return Optional.ofNullable(rules.get(id));
     }
 
     @Override
@@ -145,9 +124,7 @@ class DropTableServiceImpl implements DropTableService {
             rule.getTriggers().forEach(DropTrigger::unset);
         }
         this.tables.clear();
-        this.fileTables.clear();
         this.rules.clear();
-        this.fileRules.clear();
         if (!Files.exists(droptableFolder)) Files.createDirectories(droptableFolder);
         if (!Files.exists(rulesFolder)) Files.createDirectories(rulesFolder);
         val tableItr = Files.walk(droptableFolder).iterator();
@@ -156,7 +133,6 @@ class DropTableServiceImpl implements DropTableService {
             if (!Files.isDirectory(path)) {
                 Map<String, DropTable> load = load(path, TypeToken.of(DropTable.class));
                 this.tables.putAll(load);
-                this.fileTables.put(path.getFileName().toString().replaceFirst("[.][^.]+$", ""), load);
             }
         }
         val ruleItr = Files.walk(rulesFolder).iterator();
@@ -165,7 +141,6 @@ class DropTableServiceImpl implements DropTableService {
             if (!Files.isDirectory(path)) {
                 Map<String, DropRule> load = load(path, TypeToken.of(DropRule.class));
                 this.rules.putAll(load);
-                this.fileRules.put(path.getFileName().toString().replaceFirst("[.][^.]+$", ""), load);
             }
         }
     }

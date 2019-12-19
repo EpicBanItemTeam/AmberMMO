@@ -7,6 +7,8 @@ plugins {
 configurations {
     group = pluginGroup
     version = pluginVersion
+    def ci = System.getenv("APPVEYOR_REPO_COMMIT")
+    if (ci) version += "-ci-$ci"
     sourceCompatibility = targetCompatibility = '1.8'
     sponge.plugin.id = pluginId
     defaultTasks 'clean', 'build', 'shadowJar'
