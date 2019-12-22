@@ -22,7 +22,7 @@ public class TempModifierDataTranslator implements DataTranslator<Multimap> {
     public static final Class<Multimap> CLASS;
 
     static {
-        CLASS = (Class<Multimap>) MultimapBuilder.hashKeys().arrayListValues().build().getClass();
+        CLASS = (Class) MultimapBuilder.hashKeys().arrayListValues().build().getClass();
     }
 
     @Override
