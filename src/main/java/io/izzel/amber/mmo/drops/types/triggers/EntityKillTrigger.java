@@ -97,7 +97,8 @@ public class EntityKillTrigger implements DropTrigger {
 
         @Listener(order = Order.FIRST)
         public void on(DropItemEvent.Destruct event, @First Entity entity) {
-            if (set.contains(entity)) {
+            Object source = event.getSource();
+            if (source instanceof EntityDamageSource && set.contains(((EntityDamageSource) source).getSource())) {
                 event.setCancelled(true);
             }
         }

@@ -32,7 +32,7 @@ public class FishingTrigger implements DropTrigger {
                     try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
                         DropContext context = new DropContext()
                             .set(entity, DropContext.Key.OWNER)
-                            .set(entity.getLocation(), DropContext.Key.LOCATION);
+                            .set(event.getFishHook().getLocation(), DropContext.Key.LOCATION);
                         frame.pushCause(context);
                         action.run();
                         if (context.isOverrideDefault()) {
