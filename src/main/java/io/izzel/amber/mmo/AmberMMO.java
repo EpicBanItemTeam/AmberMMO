@@ -2,8 +2,7 @@ package io.izzel.amber.mmo;
 
 import com.google.inject.Inject;
 import io.izzel.amber.commons.i18n.AmberLocale;
-import io.izzel.amber.mmo.profession.ProfessionService;
-import io.izzel.amber.mmo.skill.SkillService;
+import io.izzel.amber.mmo.drops.DropTableService;
 import org.spongepowered.api.plugin.Plugin;
 
 import java.util.Objects;
@@ -12,10 +11,9 @@ import java.util.Objects;
 public class AmberMMO {
 
     @Inject
-    public AmberMMO(AmberLocale locale, ProfessionService profession, SkillService skill) {
+    public AmberMMO(AmberLocale locale, DropTableService drop) {
         Objects.requireNonNull(locale);
-        Objects.requireNonNull(profession);
-        Objects.requireNonNull(skill);
+        Objects.requireNonNull(drop);
     }
 
 }
