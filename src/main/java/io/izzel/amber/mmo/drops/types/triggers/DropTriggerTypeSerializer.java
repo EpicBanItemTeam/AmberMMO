@@ -20,6 +20,6 @@ public class DropTriggerTypeSerializer implements TypeSerializer<DropTrigger> {
     }
 
     @Override
-    public void serialize(@NonNull TypeToken<?> type, @Nullable DropTrigger obj, @NonNull ConfigurationNode value) throws ObjectMappingException {
+    public void serialize(@NonNull TypeToken<?> type, @Nullable DropTrigger obj, @NonNull ConfigurationNode value) {
     }
 }

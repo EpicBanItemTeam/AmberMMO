@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.types.triggers;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropContext;
 import io.izzel.amber.mmo.drops.DropTableService;
@@ -11,7 +12,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
@@ -29,7 +29,7 @@ public class EntityKillTrigger implements DropTrigger {
 
     private final EntityType entityType;
 
-    private EventListener<DestructEntityEvent.Death> listener;
+    private Inner inner;
 
     public EntityKillTrigger(EntityType entityType) {
         this.entityType = entityType;
@@ -37,27 +37,31 @@ public class EntityKillTrigger implements DropTrigger {
 
     @Override
     public void set(Runnable action) {
-        if (listener == null) {
-            listener = event -> {
-            };
-            Sponge.getEventManager().registerListener(
+        if (inner == null) {
+            inner = new Inner(action);
+            Sponge.getEventManager().registerListeners(
                 Sponge.getCauseStackManager().getCurrentCause().first(PluginContainer.class).orElseThrow(IllegalStateException::new),
-                DestructEntityEvent.Death.class,
-                Order.BEFORE_POST,
-                listener
+                inner
             );
         } else throw new IllegalStateException();
     }
 
     @Override
     public void unset() {
-        if (listener != null) {
-            Sponge.getEventManager().unregisterListeners(listener);
-            listener = null;
+        if (inner != null) {
+            Sponge.getEventManager().unregisterListeners(inner);
+            inner = null;
         } else throw new IllegalStateException();
     }
 
-    private class Inner {
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("entityType", entityType)
+            .toString();
+    }
+
+    public class Inner {
 
         private final Runnable action;
 
@@ -67,7 +71,7 @@ public class EntityKillTrigger implements DropTrigger {
             this.action = action;
         }
 
-        @Listener
+        @Listener(order = Order.LAST)
         public void on(DestructEntityEvent.Death event) {
             set.clear();
             if (event.getSource() instanceof EntityDamageSource) {
@@ -90,7 +94,7 @@ public class EntityKillTrigger implements DropTrigger {
             }
         }
 
-        @Listener
+        @Listener(order = Order.FIRST)
         public void on(DropItemEvent.Destruct event, @First Entity entity) {
             if (set.contains(entity)) {
                 event.setCancelled(true);

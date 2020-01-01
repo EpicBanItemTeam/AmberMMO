@@ -18,12 +18,10 @@ import java.util.Optional;
 
 public class VanillaEntry implements DropTable {
 
-    private final String id;
     private final Amount amount;
-    private ItemType type;
+    private final ItemType type;
 
     public VanillaEntry(String id, Amount amount) throws ObjectMappingException {
-        this.id = id;
         this.amount = amount;
         this.type = Sponge.getRegistry().getType(ItemType.class, id).orElseThrow(ObjectMappingException::new);
     }
@@ -40,7 +38,7 @@ public class VanillaEntry implements DropTable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("id", id)
+            .add("type", type)
             .add("amount", amount)
             .toString();
     }
@@ -51,7 +49,7 @@ public class VanillaEntry implements DropTable {
         @Override
         public VanillaEntry deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) throws ObjectMappingException {
             String id = value.getNode("id").getString();
-            Amount amount = value.getNode("amount").getValue(TypeToken.of(Amount.class));
+            Amount amount = value.getNode("amount").getValue(TypeToken.of(Amount.class), Amount.fixed(1));
             if (id == null) throw new ObjectMappingException();
             else return new VanillaEntry(id, amount);
         }

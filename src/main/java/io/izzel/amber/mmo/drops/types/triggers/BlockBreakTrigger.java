@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.types.triggers;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropContext;
 import io.izzel.amber.mmo.drops.DropTableService;
@@ -15,7 +16,7 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.filter.cause.ContextValue;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -53,7 +54,14 @@ public class BlockBreakTrigger implements DropTrigger {
         } else throw new IllegalStateException();
     }
 
-    private class Inner {
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("blockType", blockType)
+            .toString();
+    }
+
+    public class Inner {
 
         private final Runnable action;
 
@@ -64,8 +72,9 @@ public class BlockBreakTrigger implements DropTrigger {
         private Set<Object> set = Collections.newSetFromMap(new WeakHashMap<>());
 
         @Listener(order = Order.LAST)
-        public void on(ChangeBlockEvent.Break event, @ContextValue("OWNER") Entity entity) {
+        public void on(ChangeBlockEvent.Break event) {
             set.clear();
+            Entity entity = (Entity) event.getContext().get(EventContextKeys.OWNER).orElseThrow(NullPointerException::new);
             try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
                 DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
                 frame.pushCause(context);

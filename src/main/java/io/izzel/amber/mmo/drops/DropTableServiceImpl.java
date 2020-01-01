@@ -21,9 +21,11 @@ import io.izzel.amber.mmo.drops.types.tables.internals.ExpEntry;
 import io.izzel.amber.mmo.drops.types.tables.internals.VanillaEntry;
 import io.izzel.amber.mmo.drops.types.triggers.*;
 import lombok.val;
+import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -52,6 +54,7 @@ class DropTableServiceImpl implements DropTableService {
     private final Map<String, Class<?>> dropTableTypes = new HashMap<>();
     private final Map<String, Class<?>> dropTriggerTypes = new HashMap<>();
     private final Map<String, Class<?>> dropConditionTypes = new HashMap<>();
+    private final TypeSerializerCollection internalCol = TypeSerializers.getDefaultSerializers().newChild();
     private final DropItemProcessor processor;
 
     private Map<String, DropTable> tables = new HashMap<>();
@@ -91,6 +94,7 @@ class DropTableServiceImpl implements DropTableService {
                     trigger.set(rule::apply);
                 }
             }
+            System.out.println(rules);
         });
         game.getEventManager().registerListener(container, DropTableService.Registry.class, event -> {
             event.registerDropTableType("drop-table", DropTableEntry.class, new DropTableEntry.Serializer());
@@ -176,12 +180,14 @@ class DropTableServiceImpl implements DropTableService {
 
     private <T> Map<String, T> load(Path path, TypeToken<T> token) throws Exception {
         Map<String, T> map = Maps.newHashMap();
-        CommentedConfigurationNode node = HoconConfigurationLoader.builder().setPath(path).build().load();
+        ConfigurationOptions options = ConfigurationOptions.defaults().setSerializers(internalCol);
+        CommentedConfigurationNode node = HoconConfigurationLoader.builder().setPath(path).build().load(options);
         for (val entry : node.getChildrenMap().entrySet()) {
             try {
                 T instance = entry.getValue().getValue(token);
                 map.put(entry.getKey().toString(), instance);
-            } catch (Throwable ignored) {
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         }
         return map;
@@ -199,19 +205,19 @@ class DropTableServiceImpl implements DropTableService {
         @Override
         public <T extends DropTable> void registerDropTableType(String id, Class<T> cl, TypeSerializer<T> deserializer) {
             dropTableTypes.put(id, cl);
-            TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(cl), deserializer);
+            internalCol.registerType(TypeToken.of(cl), deserializer);
         }
 
         @Override
         public <T extends DropTrigger> void registerDropTriggerType(String id, Class<T> cl, TypeSerializer<T> deserializer) {
             dropTriggerTypes.put(id, cl);
-            TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(cl), deserializer);
+            internalCol.registerType(TypeToken.of(cl), deserializer);
         }
 
         @Override
         public <T extends DropCondition> void registerDropConditionType(String id, Class<T> cl, TypeSerializer<T> deserializer) {
             dropConditionTypes.put(id, cl);
-            TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(cl), deserializer);
+            internalCol.registerType(TypeToken.of(cl), deserializer);
         }
 
         @Override

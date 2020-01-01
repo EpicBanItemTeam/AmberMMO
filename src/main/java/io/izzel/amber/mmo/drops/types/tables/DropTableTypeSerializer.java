@@ -6,6 +6,7 @@ import io.izzel.amber.mmo.drops.DropTableService;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
 import lombok.val;
+import lombok.var;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ValueType;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -27,12 +28,12 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
         if (value.getValueType() == ValueType.MAP) {
             val path = joinPath(value);
             int roll = value.getNode("roll").getInt(1);
-            if (!value.getChildrenMap().containsKey("weighted")) {
+            if (value.getChildrenMap().containsKey("weighted")) {
                 val builder = ImmutableList.<WeightedObject<DropTable>>builder();
+                var index = 0;
                 for (val item : value.getNode("items").getChildrenList()) {
                     val iterator = item.getChildrenList().listIterator();
                     if (iterator.hasNext()) {
-                        val index = iterator.nextIndex();
                         val subId = String.format("%s.%d", path, index);
                         val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
                         val tableType = DropTableService.instance().getDropTableTypeById(tableNode.getKey().toString());
@@ -41,23 +42,33 @@ public class DropTableTypeSerializer implements TypeSerializer<DropTable> {
                         val weight = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
                         builder.add(new DynamicWeightedObject<>(subId, table, Objects.requireNonNull(weight)));
                     }
+                    index++;
                 }
                 return new WeightedDropTable(path, builder.build(), roll);
             } else {
                 val builder = ImmutableList.<DropTable>builder();
+                var index = 0;
                 for (val item : value.getNode("items").getChildrenList()) {
-                    val iterator = item.getChildrenList().listIterator();
-                    if (iterator.hasNext()) {
-                        val index = iterator.nextIndex();
+                    if (item.getValueType() == ValueType.LIST) {
+                        val iterator = item.getChildrenList().listIterator();
+                        if (iterator.hasNext()) {
+                            val subId = String.format("%s.%d", path, index);
+                            val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
+                            val tableType = DropTableService.instance().getDropTableTypeById(tableNode.getKey().toString());
+                            val table = tableNode.getValue().getValue(TypeToken.of(tableType));
+                            Objects.requireNonNull(table);
+                            val probability = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
+                            val amount = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
+                            builder.add(new ChanceTableEntry(subId, table, probability, amount));
+                        }
+                    } else if (item.getValueType() == ValueType.MAP) {
                         val subId = String.format("%s.%d", path, index);
-                        val tableNode = iterator.next().getChildrenMap().entrySet().iterator().next();
+                        val tableNode = item.getChildrenMap().entrySet().iterator().next();
                         val tableType = DropTableService.instance().getDropTableTypeById(tableNode.getKey().toString());
                         val table = tableNode.getValue().getValue(TypeToken.of(tableType));
-                        Objects.requireNonNull(table);
-                        val probability = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
-                        val amount = iterator.hasNext() ? iterator.next().getValue(TypeToken.of(Amount.class)) : Amount.fixed(1);
-                        builder.add(new ChanceTableEntry(subId, table, probability, amount));
+                        builder.add(new ChanceTableEntry(subId, table, Amount.fixed(1), Amount.fixed(1)));
                     }
+                    index++;
                 }
                 return new ChanceDropTable(path, builder.build(), roll);
             }
