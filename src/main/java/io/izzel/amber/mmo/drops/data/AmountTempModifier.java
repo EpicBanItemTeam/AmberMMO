@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.data;
 
+import com.google.common.base.MoreObjects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.data.*;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
@@ -57,6 +58,14 @@ public class AmountTempModifier implements DataSerializable {
         }
         if (operator == null) operator = DoubleUnaryOperator.identity();
         return operator;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("timeout", timeout)
+            .add("expression", expression)
+            .toString();
     }
 
     public static class Builder extends AbstractDataBuilder<AmountTempModifier> {

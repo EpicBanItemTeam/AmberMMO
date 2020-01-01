@@ -11,19 +11,23 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.CauseStackManager;
-import org.spongepowered.api.event.EventListener;
+import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
-import org.spongepowered.api.event.cause.EventContextKeys;
+import org.spongepowered.api.event.filter.cause.ContextValue;
+import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class BlockBreakTrigger implements DropTrigger {
 
     private final BlockType blockType;
 
-    private EventListener<ChangeBlockEvent.Break> listener;
+    private Inner inner;
 
     public BlockBreakTrigger(BlockType blockType) {
         this.blockType = blockType;
@@ -31,40 +35,61 @@ public class BlockBreakTrigger implements DropTrigger {
 
     @Override
     public void set(Runnable action) {
-        if (listener == null) {
-            listener = event -> {
-                event.getContext().get(EventContextKeys.OWNER).filter(Entity.class::isInstance).map(Entity.class::cast).ifPresent(entity -> {
-                    try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                        DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
-                        frame.pushCause(context);
-                        event.getTransactions().stream()
-                            .filter(Transaction::isValid)
-                            .filter(it -> it.getOriginal().getState().getType() == blockType)
-                            .map(Transaction::getOriginal)
-                            .forEach(snapshot -> {
-                                context.resetDrops();
-                                context.set(snapshot.getState(), DropContext.Key.BLOCK)
-                                    .set(snapshot.getLocation(), DropContext.Key.LOCATION);
-                                action.run();
-                            });
-                    }
-                });
-            };
-            Sponge.getEventManager().registerListener(
+        if (inner == null) {
+            inner = new Inner(action);
+            Sponge.getEventManager().registerListeners(
                 Sponge.getCauseStackManager().getCurrentCause().first(PluginContainer.class).orElseThrow(IllegalStateException::new),
-                ChangeBlockEvent.Break.class,
-                Order.BEFORE_POST,
-                listener
+                inner
             );
         } else throw new IllegalStateException();
     }
 
     @Override
     public void unset() {
-        if (listener != null) {
-            Sponge.getEventManager().unregisterListeners(listener);
-            listener = null;
+        if (inner != null) {
+            Sponge.getEventManager().unregisterListeners(inner);
+            inner = null;
         } else throw new IllegalStateException();
+    }
+
+    private class Inner {
+
+        private final Runnable action;
+
+        private Inner(Runnable action) {
+            this.action = action;
+        }
+
+        private Set<Object> set = Collections.newSetFromMap(new WeakHashMap<>());
+
+        @Listener(order = Order.LAST)
+        public void on(ChangeBlockEvent.Break event, @ContextValue("OWNER") Entity entity) {
+            try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
+                frame.pushCause(context);
+                event.getTransactions().stream()
+                    .filter(Transaction::isValid)
+                    .filter(it -> it.getOriginal().getState().getType() == blockType)
+                    .map(Transaction::getOriginal)
+                    .forEach(snapshot -> {
+                        context.resetDrops();
+                        context.set(snapshot.getState(), DropContext.Key.BLOCK)
+                            .set(snapshot.getLocation(), DropContext.Key.LOCATION);
+                        action.run();
+                        if (context.isOverrideDefault()) {
+                            set.add(snapshot);
+                        }
+                    });
+            }
+        }
+
+        @Listener(order = Order.FIRST)
+        public void on(DropItemEvent.Destruct event) {
+            if (set.remove(event.getCause().root())) {
+                event.setCancelled(true);
+            }
+        }
+
     }
 
     public static class Serializer implements TypeSerializer<BlockBreakTrigger> {

@@ -11,8 +11,8 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public class DropContext {
 
-    private final Map<Key<?>, Object> keyMap = new HashMap<>();
-    private final Map<String, Object> strMap = new HashMap<>();
+    private final Map<Key<?>, Object> keyMap = new WeakHashMap<>();
+    private final Map<String, Object> strMap = new WeakHashMap<>();
     private final LinkedList<ItemStackSnapshot> drops = new LinkedList<>();
     private boolean overrideDefault = false;
 
@@ -57,6 +57,7 @@ public class DropContext {
 
     public void resetDrops() {
         this.drops.clear();
+        this.overrideDefault = false;
     }
 
     public void resetContext() {

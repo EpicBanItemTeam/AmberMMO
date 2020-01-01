@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.izzel.amber.mmo.drops.data.AmountTempModifier;
 import io.izzel.amber.mmo.drops.data.DropPlayerData;
-import io.izzel.amber.mmo.drops.data.TempModifierDataTranslator;
 import io.izzel.amber.mmo.drops.types.DropRule;
 import io.izzel.amber.mmo.drops.types.DropRuleTypeSerializer;
 import io.izzel.amber.mmo.drops.types.conditions.*;
@@ -25,11 +24,9 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataRegistration;
-import org.spongepowered.api.data.persistence.DataTranslator;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -75,9 +72,6 @@ class DropTableServiceImpl implements DropTableService {
                 .name("AmberMMO Cooldown Data")
                 .build();
             game.getDataManager().registerBuilder(AmountTempModifier.class, new AmountTempModifier.Builder());
-        });
-        game.getEventManager().registerListener(container, new TypeToken<GameRegistryEvent.Register<DataTranslator<?>>>() {}, event -> {
-            event.register(new TempModifierDataTranslator());
         });
         game.getEventManager().registerListener(container, GamePostInitializationEvent.class, event -> {
             try (CauseStackManager.StackFrame frame = game.getCauseStackManager().pushCauseFrame()) {

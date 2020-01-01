@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops.data;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import lombok.val;
@@ -14,9 +15,11 @@ import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.util.Coerce;
 import org.spongepowered.plugin.meta.util.NonnullByDefault;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.DoubleUnaryOperator;
@@ -80,6 +83,14 @@ public class DropPlayerData {
         protected DataContainer fillContainer(DataContainer dataContainer) {
             return DropPlayerData.fillContainer(super.fillContainer(dataContainer), cooldown, tempModifier);
         }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("cooldown", cooldown)
+                .add("tempModifier", tempModifier)
+                .toString();
+        }
     }
 
     public static class Immutable extends AbstractImmutableData<Immutable, Mutable> {
@@ -108,6 +119,14 @@ public class DropPlayerData {
         @Override
         protected DataContainer fillContainer(DataContainer dataContainer) {
             return DropPlayerData.fillContainer(super.fillContainer(dataContainer), cooldown, tempModifier);
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("cooldown", cooldown)
+                .add("tempModifier", tempModifier)
+                .toString();
         }
     }
 
@@ -139,13 +158,21 @@ public class DropPlayerData {
     @SuppressWarnings("unchecked")
     private static Mutable fromContainer(DataView container, Mutable data) {
         container.getMap(COOLDOWN).ifPresent(it -> data.cooldown.putAll((Map<? extends String, ? extends Long>) it));
-        container.getObject(MODIFIER, TempModifierDataTranslator.CLASS).ifPresent(data.tempModifier::putAll);
+        container.getMap(MODIFIER).ifPresent(it -> {
+            for (val entry : ((Map<String, List<Map<String, ?>>>) it).entrySet()) {
+                for (Map<String, ?> map : entry.getValue()) {
+                    long timeout = Coerce.toLong(map.get("Timeout"));
+                    String expression = String.valueOf(map.get("Expression"));
+                    data.tempModifier.put(entry.getKey(), new AmountTempModifier(timeout, expression));
+                }
+            }
+        });
         return data;
     }
 
     private static DataContainer fillContainer(DataContainer container, Map<String, Long> cooldown, Multimap<String, AmountTempModifier> tempModifier) {
         container.set(COOLDOWN, cooldown);
-        container.set(MODIFIER, tempModifier);
+        container.set(MODIFIER, tempModifier.asMap());
         return container;
     }
 
