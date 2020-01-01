@@ -16,10 +16,7 @@ import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import io.izzel.amber.mmo.drops.types.tables.DropTableTypeSerializer;
 import io.izzel.amber.mmo.drops.types.tables.amounts.Amount;
 import io.izzel.amber.mmo.drops.types.tables.amounts.AmountSerializer;
-import io.izzel.amber.mmo.drops.types.tables.internals.CommandEntry;
-import io.izzel.amber.mmo.drops.types.tables.internals.DropTableEntry;
-import io.izzel.amber.mmo.drops.types.tables.internals.ExpEntry;
-import io.izzel.amber.mmo.drops.types.tables.internals.VanillaEntry;
+import io.izzel.amber.mmo.drops.types.tables.internals.*;
 import io.izzel.amber.mmo.drops.types.triggers.*;
 import lombok.val;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -101,14 +98,17 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropTableType("vanilla", VanillaEntry.class, new VanillaEntry.Serializer());
             event.registerDropTableType("exp", ExpEntry.class, new ExpEntry.Serializer());
             event.registerDropTableType("command", CommandEntry.class, new CommandEntry.Serializer());
+            event.registerDropTableType("override", OverrideEntry.class, new OverrideEntry.Serializer());
             event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
             event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
             event.registerDropConditionType("in-region", InRegionCondition.class, new InRegionCondition.Serializer());
             event.registerDropConditionType("date", DateCondition.class, new DateCondition.Serializer());
+            event.registerDropConditionType("permission", HasPermissionCondition.class, new HasPermissionCondition.Serializer());
             event.registerDropTriggerType("timer", TimerTrigger.class, new TimerTrigger.Serializer());
             event.registerDropTriggerType("block-break", BlockBreakTrigger.class, new BlockBreakTrigger.Serializer());
             event.registerDropTriggerType("entity-kill", EntityKillTrigger.class, new EntityKillTrigger.Serializer());
+            event.registerDropTriggerType("fishing", FishingTrigger.class, new FishingTrigger.Serializer());
         });
     }
 
