@@ -6,7 +6,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -26,13 +25,11 @@ public class SimpleDropItemProcessor implements DropItemProcessor {
             context.get(DropContext.Key.LOCATION).ifPresent(location -> {
                 Task.builder().delayTicks(10) // todo fixed delay
                     .execute(() -> {
-                        try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                            frame.addContext(EventContextKeys.SPAWN_TYPE, SpawnTypes.DROPPED_ITEM);
-                            for (ItemStackSnapshot snapshot : list) {
-                                Entity entity = location.getExtent().createEntityNaturally(EntityTypes.ITEM, location.getPosition());
-                                entity.offer(Keys.REPRESENTED_ITEM, snapshot);
-                                location.getExtent().spawnEntity(entity);
-                            }
+                        Sponge.getCauseStackManager().addContext(EventContextKeys.SPAWN_TYPE, SpawnTypes.DROPPED_ITEM);
+                        for (ItemStackSnapshot snapshot : list) {
+                            Entity entity = location.getExtent().createEntityNaturally(EntityTypes.ITEM, location.getPosition());
+                            entity.offer(Keys.REPRESENTED_ITEM, snapshot);
+                            location.getExtent().spawnEntity(entity);
                         }
                     }).submit(container);
             });
