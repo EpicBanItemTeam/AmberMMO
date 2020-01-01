@@ -19,5 +19,14 @@
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-kotlin.min.js"></script>
+  <script>
+    Prism.languages.hocon = Prism.languages.extend("kotlin", {
+      'function': [
+        /[\w\-.]+(?=\s*[\w\-.]*{)/,
+        /[\w\-.]+(?=\s*[\w\-.]*=)/
+      ]
+    })
+  </script>
 </body>
 </html>
