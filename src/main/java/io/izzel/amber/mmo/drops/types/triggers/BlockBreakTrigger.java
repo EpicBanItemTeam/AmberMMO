@@ -2,6 +2,7 @@ package io.izzel.amber.mmo.drops.types.triggers;
 
 import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropContext;
+import io.izzel.amber.mmo.drops.DropTableService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -64,6 +65,7 @@ public class BlockBreakTrigger implements DropTrigger {
 
         @Listener(order = Order.LAST)
         public void on(ChangeBlockEvent.Break event, @ContextValue("OWNER") Entity entity) {
+            set.clear();
             try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
                 DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
                 frame.pushCause(context);
@@ -79,13 +81,14 @@ public class BlockBreakTrigger implements DropTrigger {
                         if (context.isOverrideDefault()) {
                             set.add(snapshot);
                         }
+                        DropTableService.instance().getDropItemProcessor().handle(context.getDrops());
                     });
             }
         }
 
         @Listener(order = Order.FIRST)
         public void on(DropItemEvent.Destruct event) {
-            if (set.remove(event.getCause().root())) {
+            if (set.contains(event.getCause().root())) {
                 event.setCancelled(true);
             }
         }

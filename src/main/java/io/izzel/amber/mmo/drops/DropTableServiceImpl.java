@@ -3,9 +3,12 @@ package io.izzel.amber.mmo.drops;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.izzel.amber.mmo.drops.data.AmountTempModifier;
 import io.izzel.amber.mmo.drops.data.DropPlayerData;
+import io.izzel.amber.mmo.drops.processor.DropItemProcessor;
+import io.izzel.amber.mmo.drops.processor.SimpleDropItemProcessor;
 import io.izzel.amber.mmo.drops.types.DropRule;
 import io.izzel.amber.mmo.drops.types.DropRuleTypeSerializer;
 import io.izzel.amber.mmo.drops.types.conditions.*;
@@ -48,14 +51,16 @@ class DropTableServiceImpl implements DropTableService {
     private final Map<String, Class<?>> dropTableTypes = new HashMap<>();
     private final Map<String, Class<?>> dropTriggerTypes = new HashMap<>();
     private final Map<String, Class<?>> dropConditionTypes = new HashMap<>();
+    private final DropItemProcessor processor;
 
     private Map<String, DropTable> tables = new HashMap<>();
     private Map<String, DropRule> rules = new HashMap<>();
 
     @Inject
-    public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path) {
+    public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path, Injector injector) {
         this.droptableFolder = path.resolve("drop_tables");
         this.rulesFolder = path.resolve("drop_rules");
+        this.processor = injector.getInstance(SimpleDropItemProcessor.class); // todo more implementations
         game.getServiceManager().setProvider(container, DropTableService.class, this);
         TypeSerializers.getDefaultSerializers()
             .registerType(TypeToken.of(DropTable.class), new DropTableTypeSerializer())
@@ -160,6 +165,11 @@ class DropTableServiceImpl implements DropTableService {
     @Override
     public DoubleUnaryOperator getModifier(Entity entity, String amount) {
         return DropPlayerData.getModifiers(entity, amount);
+    }
+
+    @Override
+    public DropItemProcessor getDropItemProcessor() {
+        return processor;
     }
 
     private <T> Map<String, T> load(Path path, TypeToken<T> token) throws Exception {

@@ -2,6 +2,7 @@ package io.izzel.amber.mmo.drops;
 
 import com.google.inject.ImplementedBy;
 import io.izzel.amber.mmo.drops.data.AmountTempModifier;
+import io.izzel.amber.mmo.drops.processor.DropItemProcessor;
 import io.izzel.amber.mmo.drops.types.DropRule;
 import io.izzel.amber.mmo.drops.types.conditions.DropCondition;
 import io.izzel.amber.mmo.drops.types.tables.DropTable;
@@ -32,6 +33,8 @@ public interface DropTableService {
     void addModifier(Entity entity, String amount, AmountTempModifier modifier);
 
     DoubleUnaryOperator getModifier(Entity entity, String amount);
+
+    DropItemProcessor getDropItemProcessor();
 
     static DropTableService instance() {
         return Sponge.getServiceManager().provideUnchecked(DropTableService.class);

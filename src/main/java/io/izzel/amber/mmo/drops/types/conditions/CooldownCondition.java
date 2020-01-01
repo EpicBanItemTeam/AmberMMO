@@ -11,7 +11,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 
 import java.util.Arrays;
@@ -86,18 +85,15 @@ public interface CooldownCondition extends DropCondition {
 
             @Override
             public boolean test() {
-                Optional<DropContext> contextOptional = Sponge.getCauseStackManager().getCurrentCause().last(DropContext.class);
-                if (contextOptional.isPresent()) {
-                    DropContext context = contextOptional.get();
-                    Optional<Entity> entityOptional = context.get(DropContext.Key.OWNER);
-                    if (entityOptional.isPresent()) {
-                        Entity entity = entityOptional.get();
-                        long time = (long) (tick.get() * 20D);
-                        long last = DropPlayerData.getCooldown(entity, id);
-                        if (System.currentTimeMillis() - last > time) {
-                            DropPlayerData.updateCooldown(entity, id, System.currentTimeMillis());
-                            return true;
-                        }
+                DropContext context = DropContext.current();
+                Optional<Entity> entityOptional = context.get(DropContext.Key.OWNER);
+                if (entityOptional.isPresent()) {
+                    Entity entity = entityOptional.get();
+                    long time = (long) (tick.get() * 20D);
+                    long last = DropPlayerData.getCooldown(entity, id);
+                    if (System.currentTimeMillis() - last > time) {
+                        DropPlayerData.updateCooldown(entity, id, System.currentTimeMillis());
+                        return true;
                     }
                 }
                 return false;

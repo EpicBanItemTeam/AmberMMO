@@ -11,7 +11,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -54,8 +53,8 @@ public interface InRegionCondition extends DropCondition {
 
             @Override
             public boolean test() {
-                return Sponge.getCauseStackManager().getCurrentCause().first(DropContext.class)
-                    .flatMap(it -> it.get(DropContext.Key.LOCATION))
+                return DropContext.current()
+                    .get(DropContext.Key.LOCATION)
                     .map(Location::getExtent)
                     .map(World::getName)
                     .filter(worlds::contains)
@@ -81,8 +80,7 @@ public interface InRegionCondition extends DropCondition {
 
             @Override
             public boolean test() {
-                val loc = Sponge.getCauseStackManager().getCurrentCause().first(DropContext.class)
-                    .flatMap(it -> it.get(DropContext.Key.LOCATION));
+                val loc = DropContext.current().get(DropContext.Key.LOCATION);
                 if (!loc.isPresent()) return true;
                 val optional = loc.filter(location -> location.getExtent().getName().equals(from.getWorld())
                     && Math.min(from.getX(), to.getX()) <= location.getX() && location.getX() <= Math.max(from.getX(), to.getX())

@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -76,6 +77,10 @@ public class DropContext {
 
     public boolean isOverrideDefault() {
         return overrideDefault;
+    }
+
+    public static DropContext current() {
+        return Sponge.getCauseStackManager().getCurrentCause().first(DropContext.class).orElseThrow(IllegalStateException::new);
     }
 
     public static final class Key<T> {
