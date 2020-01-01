@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import io.izzel.amber.mmo.drops.DropContext;
 import io.izzel.amber.mmo.drops.DropTableService;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -106,7 +107,7 @@ public class EntityKillTrigger implements DropTrigger {
 
         @Nullable
         @Override
-        public EntityKillTrigger deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) {
+        public EntityKillTrigger deserialize(@NonNull TypeToken<?> type, @NonNull ConfigurationNode value) throws ObjectMappingException {
             String string = value.getNode("type").getString();
             if (string == null) return new EntityKillTrigger(null);
             else {
@@ -115,7 +116,7 @@ public class EntityKillTrigger implements DropTrigger {
                     return new EntityKillTrigger(typeOptional.get());
                 }
             }
-            return null;
+            throw new ObjectMappingException();
         }
 
         @Override
