@@ -1,4 +1,8 @@
 
+```hocon
+{ ID { 参数1 = xxxx, 参数2 = xxxx } }
+```
+
 ## 触发器
 
 | ID | 描述 | 可用参数 |
@@ -26,3 +30,5 @@
 | --- | --- | --- |
 | `drop-table` | 引用自身或其他掉落表 | `id` 表名 |
 | `vanilla` | 原版掉落物 | `id` 物品种类 id <br> `amount` （可选）物品数量 |
+| `exp` | 经验球 | `{exp=N}` |
+| `command` | 以引发掉落的玩家或生物的身份执行命令 | `{command="say hello"}` |
