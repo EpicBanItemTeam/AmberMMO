@@ -12,7 +12,7 @@ Document at [https://amo.izzel.io](https://amo.izzel.io)
  
 ## Modules
 
-- [ ] Drops
+- [x] Drops
 - [ ] Skills
 - [ ] Professions
 - [ ] Guilds
