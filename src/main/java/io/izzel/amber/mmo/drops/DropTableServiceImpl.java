@@ -36,8 +36,8 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.meta.util.NonnullByDefault;
 
 import java.nio.file.Files;
@@ -51,6 +51,7 @@ import java.util.function.DoubleUnaryOperator;
 @Singleton
 class DropTableServiceImpl implements DropTableService {
 
+    private final PluginContainer container;
     private final Path droptableFolder, rulesFolder;
     private final Map<String, Class<?>> dropTableTypes = new HashMap<>();
     private final Map<String, Class<?>> dropTriggerTypes = new HashMap<>();
@@ -66,6 +67,7 @@ class DropTableServiceImpl implements DropTableService {
     @Inject
     public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path,
                                 Injector injector, AmberLocale locale) {
+        this.container = container;
         this.droptableFolder = path.resolve("drop_tables");
         this.rulesFolder = path.resolve("drop_rules");
         this.processor = injector.getInstance(SimpleDropItemProcessor.class); // todo more implementations
@@ -92,13 +94,6 @@ class DropTableServiceImpl implements DropTableService {
                 game.getEventManager().post(new RegistryImpl(frame.getCurrentCause()));
             }
             reloadDrops(game.getServer().getConsole());
-        });
-        game.getEventManager().registerListener(container, GameStartedServerEvent.class, event -> {
-            for (DropRule rule : this.rules.values()) {
-                for (DropTrigger trigger : rule.getTriggers()) {
-                    trigger.set(rule::apply);
-                }
-            }
         });
         game.getEventManager().registerListener(container, DropTableService.Registry.class, event -> {
             event.registerDropTableType("drop-table", DropTableEntry.class, new DropTableEntry.Serializer());
@@ -175,6 +170,13 @@ class DropTableServiceImpl implements DropTableService {
                 this.rules.putAll(load);
             }
         }
+        Task.builder().delayTicks(1).execute(() -> {
+            for (DropRule rule : this.rules.values()) {
+                for (DropTrigger trigger : rule.getTriggers()) {
+                    trigger.set(rule::apply);
+                }
+            }
+        }).submit(container);
         locale.to(source, "drops.command.reload.success", tables.size(), rules.size());
     }
 
