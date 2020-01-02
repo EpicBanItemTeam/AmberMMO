@@ -22,10 +22,11 @@ public class CommandEntry implements DropTable {
     @Override
     public void accepts() {
         DropContext context = DropContext.current();
-        context.get(DropContext.Key.OWNER)
+        CommandSource source = context.get(DropContext.Key.OWNER)
             .filter(CommandSource.class::isInstance)
             .map(CommandSource.class::cast)
-            .ifPresent(entity -> Sponge.getCommandManager().process(entity, command));
+            .orElse(Sponge.getServer().getConsole());
+        Sponge.getCommandManager().process(source, command);
     }
 
     public static class Serializer implements TypeSerializer<CommandEntry> {

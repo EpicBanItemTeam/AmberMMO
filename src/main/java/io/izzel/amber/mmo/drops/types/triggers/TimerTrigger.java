@@ -2,12 +2,14 @@ package io.izzel.amber.mmo.drops.types.triggers;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.reflect.TypeToken;
+import io.izzel.amber.mmo.drops.DropContext;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 
@@ -28,7 +30,12 @@ public class TimerTrigger implements DropTrigger {
             task = Task.builder()
                 .delayTicks(delay)
                 .intervalTicks(period)
-                .execute(action)
+                .execute(() -> {
+                    try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                        frame.pushCause(new DropContext());
+                        action.run();
+                    }
+                })
                 .submit(Sponge.getCauseStackManager().getCurrentCause().first(PluginContainer.class).orElseThrow(IllegalStateException::new));
         } else throw new IllegalStateException();
     }
