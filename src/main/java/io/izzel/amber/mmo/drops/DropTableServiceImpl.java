@@ -31,6 +31,7 @@ import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -109,6 +110,11 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropTriggerType("block-break", BlockBreakTrigger.class, new BlockBreakTrigger.Serializer());
             event.registerDropTriggerType("entity-kill", EntityKillTrigger.class, new EntityKillTrigger.Serializer());
             event.registerDropTriggerType("fishing", FishingTrigger.class, new FishingTrigger.Serializer());
+        });
+        game.getEventManager().registerListener(container, RespawnPlayerEvent.class, event -> {
+            event.getOriginalPlayer().get(DropPlayerData.Mutable.class).ifPresent(mutable -> {
+                event.getTargetEntity().offer(mutable);
+            });
         });
     }
 
