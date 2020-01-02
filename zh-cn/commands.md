@@ -13,8 +13,16 @@
 
 **权限** `ambermmo.admin.drops.dynamic`
 
-**参数** `<add|set> [<玩家>] <键> <持续时间> <表达式>`
+**参数** `add|set [<玩家>] <键> <持续时间> <表达式>`
 
-**参数** `<reset> [<玩家>] <键>`
+**参数** `reset [<玩家>] <键>`
 
 添加、设置或清除玩家某个键的[动态值](/zh-cn/dynamic.md)。
+
+#### `execute`
+
+**权限** `ambermmo.admin.drops.execute`
+
+**参数** `<规则> [<玩家>]`
+
+直接执行一个掉落规则。
