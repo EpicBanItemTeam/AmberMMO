@@ -104,7 +104,6 @@ festival_bonus {
     { vanilla { id = "diamond", amount = 2 } } // 掉落两个钻石
   ]
 }
-
 ```
 
 以上示例将会在春节期间，任何击杀僵尸的玩家都会获得额外的经验值和钻石。
