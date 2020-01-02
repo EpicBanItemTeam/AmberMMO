@@ -9,6 +9,7 @@ import io.izzel.amber.mmo.drops.types.tables.DropTable;
 import io.izzel.amber.mmo.drops.types.triggers.DropTrigger;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.event.Event;
 
@@ -28,7 +29,7 @@ public interface DropTableService {
 
     Optional<DropRule> getDropRuleById(String id);
 
-    void reloadDrops() throws Exception;
+    void reloadDrops(CommandSource source) throws Exception;
 
     void addModifier(Entity entity, String amount, AmountTempModifier modifier);
 

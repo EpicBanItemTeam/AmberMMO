@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import io.izzel.amber.commons.i18n.AmberLocale;
 import io.izzel.amber.mmo.drops.data.AmountTempModifier;
 import io.izzel.amber.mmo.drops.data.DropPlayerData;
 import io.izzel.amber.mmo.drops.processor.DropItemProcessor;
@@ -26,6 +27,7 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.entity.Entity;
@@ -56,14 +58,18 @@ class DropTableServiceImpl implements DropTableService {
     private final TypeSerializerCollection internalCol = TypeSerializers.getDefaultSerializers().newChild();
     private final DropItemProcessor processor;
 
+    private final AmberLocale locale;
+
     private Map<String, DropTable> tables = new HashMap<>();
     private Map<String, DropRule> rules = new HashMap<>();
 
     @Inject
-    public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path, Injector injector) {
+    public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path,
+                                Injector injector, AmberLocale locale) {
         this.droptableFolder = path.resolve("drop_tables");
         this.rulesFolder = path.resolve("drop_rules");
         this.processor = injector.getInstance(SimpleDropItemProcessor.class); // todo more implementations
+        this.locale = locale;
         game.getServiceManager().setProvider(container, DropTableService.class, this);
         TypeSerializers.getDefaultSerializers()
             .registerType(TypeToken.of(DropTable.class), new DropTableTypeSerializer())
@@ -85,7 +91,7 @@ class DropTableServiceImpl implements DropTableService {
             try (CauseStackManager.StackFrame frame = game.getCauseStackManager().pushCauseFrame()) {
                 game.getEventManager().post(new RegistryImpl(frame.getCurrentCause()));
             }
-            reloadDrops();
+            reloadDrops(game.getServer().getConsole());
         });
         game.getEventManager().registerListener(container, GameStartedServerEvent.class, event -> {
             for (DropRule rule : this.rules.values()) {
@@ -145,7 +151,7 @@ class DropTableServiceImpl implements DropTableService {
     }
 
     @Override
-    public void reloadDrops() throws Exception {
+    public void reloadDrops(CommandSource source) throws Exception {
         for (DropRule rule : this.rules.values()) {
             rule.getTriggers().forEach(DropTrigger::unset);
         }
@@ -169,6 +175,7 @@ class DropTableServiceImpl implements DropTableService {
                 this.rules.putAll(load);
             }
         }
+        locale.to(source, "drops.command.reload.success", tables.size(), rules.size());
     }
 
     @Override
