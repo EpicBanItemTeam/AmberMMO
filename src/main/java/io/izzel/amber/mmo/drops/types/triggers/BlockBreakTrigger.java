@@ -74,25 +74,29 @@ public class BlockBreakTrigger implements DropTrigger {
         @Listener(order = Order.LAST)
         public void on(ChangeBlockEvent.Break event) {
             set.clear();
-            Entity entity = (Entity) event.getContext().get(EventContextKeys.OWNER).orElseThrow(NullPointerException::new);
-            try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
-                frame.pushCause(context);
-                event.getTransactions().stream()
-                    .filter(Transaction::isValid)
-                    .filter(it -> it.getOriginal().getState().getType() == blockType)
-                    .map(Transaction::getOriginal)
-                    .forEach(snapshot -> {
-                        context.resetDrops();
-                        context.set(snapshot.getState(), DropContext.Key.BLOCK)
-                            .set(snapshot.getLocation(), DropContext.Key.LOCATION);
-                        action.run();
-                        if (context.isOverrideDefault()) {
-                            set.add(snapshot);
-                        }
-                        DropTableService.instance().getDropItemProcessor().handle(context.getDrops());
-                    });
-            }
+            event.getContext().get(EventContextKeys.OWNER)
+                .filter(Entity.class::isInstance)
+                .map(Entity.class::cast)
+                .ifPresent(entity -> {
+                    try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                        DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
+                        frame.pushCause(context);
+                        event.getTransactions().stream()
+                            .filter(Transaction::isValid)
+                            .filter(it -> it.getOriginal().getState().getType() == blockType)
+                            .map(Transaction::getOriginal)
+                            .forEach(snapshot -> {
+                                context.resetDrops();
+                                context.set(snapshot.getState(), DropContext.Key.BLOCK)
+                                    .set(snapshot.getLocation(), DropContext.Key.LOCATION);
+                                action.run();
+                                if (context.isOverrideDefault()) {
+                                    set.add(snapshot);
+                                }
+                                DropTableService.instance().getDropItemProcessor().handle(context.getDrops());
+                            });
+                    }
+                });
         }
 
         @Listener(order = Order.FIRST)
