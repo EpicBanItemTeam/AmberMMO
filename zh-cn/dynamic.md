@@ -38,8 +38,8 @@ chance_table {
 ## 命令
 
 ```
-/dtops dynamic add <玩家> chance_table.items.0.1 3.5s *1.4
-/dtops dynamic set <玩家> chance_table.items.0.2 1m30s +1
+/drops dynamic add <玩家> chance_table.items.0.1 3.5s *1.4
+/drops dynamic set <玩家> chance_table.items.0.2 1m30s +1
 ```
 
 效果与上一个示例相同。
