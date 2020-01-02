@@ -204,4 +204,17 @@ public class DropPlayerData {
         entity.offer(mutable);
     }
 
+    public static void setModifier(Entity entity, String key, AmountTempModifier modifier) {
+        Mutable mutable = entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new);
+        mutable.tempModifier.removeAll(key);
+        mutable.tempModifier.put(key, modifier);
+        entity.offer(mutable);
+    }
+
+    public static void resetModifier(Entity entity, String key) {
+        Mutable mutable = entity.getOrCreate(Mutable.class).orElseThrow(IllegalStateException::new);
+        mutable.tempModifier.removeAll(key);
+        entity.offer(mutable);
+    }
+
 }

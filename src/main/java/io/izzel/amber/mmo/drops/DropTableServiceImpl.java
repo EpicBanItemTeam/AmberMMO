@@ -100,6 +100,7 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropTableType("exp", ExpEntry.class, new ExpEntry.Serializer());
             event.registerDropTableType("command", CommandEntry.class, new CommandEntry.Serializer());
             event.registerDropTableType("override", OverrideEntry.class, new OverrideEntry.Serializer());
+            event.registerDropTableType("dynamic", DynamicEntry.class, new DynamicEntry.Serializer());
             event.registerDropConditionType("cooldown", CooldownCondition.class, new CooldownCondition.Serializer());
             event.registerDropConditionType("any", AnyMatchCondition.class, new AnyMatchCondition.Serializer());
             event.registerDropConditionType("not", NotCondition.class, new NotCondition.Serializer());
