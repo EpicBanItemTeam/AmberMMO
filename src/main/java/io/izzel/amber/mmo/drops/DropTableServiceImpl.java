@@ -205,6 +205,11 @@ class DropTableServiceImpl implements DropTableService {
                 map.put(entry.getKey().toString(), instance);
             } catch (Throwable e) {
                 e.printStackTrace();
+                if (token.getType().equals(DropTable.class)) {
+                    locale.log("drops.load.table-error", path, entry.getKey(), e);
+                } else if (token.getType().equals(DropRule.class)) {
+                    locale.log("drops.load.rule-error", path, entry.getKey(), e);
+                }
             }
         }
         return map;
