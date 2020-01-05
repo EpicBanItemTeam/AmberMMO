@@ -20,7 +20,7 @@ public class SimpleDropItemProcessor implements DropItemProcessor {
             context.get(DropContext.Key.LOCATION).ifPresent(location -> {
                 Sponge.getCauseStackManager().addContext(EventContextKeys.SPAWN_TYPE, SpawnTypes.DROPPED_ITEM);
                 for (ItemStackSnapshot snapshot : list) {
-                    Entity entity = location.getExtent().createEntityNaturally(EntityTypes.ITEM, location.getPosition());
+                    Entity entity = location.getExtent().createEntityNaturally(EntityTypes.ITEM, location.getPosition().add(0.5, 0.5, 0.5));
                     entity.offer(Keys.REPRESENTED_ITEM, snapshot);
                     location.getExtent().spawnEntity(entity);
                 }
