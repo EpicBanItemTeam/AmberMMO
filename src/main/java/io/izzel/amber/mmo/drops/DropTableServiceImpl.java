@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.DoubleUnaryOperator;
 
@@ -66,7 +67,8 @@ class DropTableServiceImpl implements DropTableService {
 
     @Inject
     public DropTableServiceImpl(PluginContainer container, Game game, @ConfigDir(sharedRoot = false) Path path,
-                                Injector injector, AmberLocale locale) {
+                                Injector injector, AmberLocale locale, DropModuleCommand command) {
+        Objects.requireNonNull(command);
         this.container = container;
         this.droptableFolder = path.resolve("drop_tables");
         this.rulesFolder = path.resolve("drop_rules");

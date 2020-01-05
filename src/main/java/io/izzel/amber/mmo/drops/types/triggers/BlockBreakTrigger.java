@@ -11,7 +11,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.Transaction;
-import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -71,32 +73,36 @@ public class BlockBreakTrigger implements DropTrigger {
 
         private Set<Object> set = Collections.newSetFromMap(new WeakHashMap<>());
 
+        @SuppressWarnings("OptionalGetWithoutIsPresent")
         @Listener(order = Order.LAST)
         public void on(ChangeBlockEvent.Break event) {
             set.clear();
-            event.getContext().get(EventContextKeys.OWNER)
-                .filter(Entity.class::isInstance)
-                .map(Entity.class::cast)
-                .ifPresent(entity -> {
-                    try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                        DropContext context = new DropContext().set(entity, DropContext.Key.OWNER);
-                        frame.pushCause(context);
-                        event.getTransactions().stream()
-                            .filter(Transaction::isValid)
-                            .filter(it -> it.getOriginal().getState().getType() == blockType)
-                            .map(Transaction::getOriginal)
-                            .forEach(snapshot -> {
-                                context.resetDrops();
-                                context.set(snapshot.getState(), DropContext.Key.BLOCK)
-                                    .set(snapshot.getLocation(), DropContext.Key.LOCATION);
-                                action.run();
-                                if (context.isOverrideDefault()) {
-                                    set.add(snapshot);
-                                }
-                                DropTableService.instance().getDropItemProcessor().handle(context.getDrops());
-                            });
-                    }
-                });
+            if (event.getContext().containsKey(EventContextKeys.SPAWN_TYPE)) {
+                event.getContext().get(EventContextKeys.OWNER)
+                    .filter(Player.class::isInstance)
+                    .map(Player.class::cast)
+                    .filter(it -> !it.get(Keys.GAME_MODE).get().equals(GameModes.CREATIVE))
+                    .ifPresent(player -> {
+                        try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                            DropContext context = new DropContext().set(player, DropContext.Key.OWNER);
+                            frame.pushCause(context);
+                            event.getTransactions().stream()
+                                .filter(Transaction::isValid)
+                                .filter(it -> it.getOriginal().getState().getType() == blockType)
+                                .map(Transaction::getOriginal)
+                                .forEach(snapshot -> {
+                                    context.resetDrops();
+                                    context.set(snapshot.getState(), DropContext.Key.BLOCK)
+                                        .set(snapshot.getLocation(), DropContext.Key.LOCATION);
+                                    action.run();
+                                    if (context.isOverrideDefault()) {
+                                        set.add(snapshot);
+                                    }
+                                    DropTableService.instance().getDropItemProcessor().handle(context.getDrops());
+                                });
+                        }
+                    });
+            }
         }
 
         @Listener(order = Order.FIRST)
