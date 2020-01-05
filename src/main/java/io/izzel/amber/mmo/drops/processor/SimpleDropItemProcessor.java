@@ -22,6 +22,7 @@ public class SimpleDropItemProcessor implements DropItemProcessor {
                 for (ItemStackSnapshot snapshot : list) {
                     Entity entity = location.getExtent().createEntityNaturally(EntityTypes.ITEM, location.getPosition().add(0.5, 0.5, 0.5));
                     entity.offer(Keys.REPRESENTED_ITEM, snapshot);
+                    entity.offer(Keys.PICKUP_DELAY, 10);
                     location.getExtent().spawnEntity(entity);
                 }
             });

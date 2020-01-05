@@ -19,6 +19,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.EventContextKeys;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -77,7 +78,7 @@ public class BlockBreakTrigger implements DropTrigger {
         @Listener(order = Order.LAST)
         public void on(ChangeBlockEvent.Break event) {
             set.clear();
-            if (event.getContext().containsKey(EventContextKeys.SPAWN_TYPE)) {
+            if (event.getContext().get(EventContextKeys.SPAWN_TYPE).filter(it -> it.equals(SpawnTypes.DROPPED_ITEM)).isPresent()) {
                 event.getContext().get(EventContextKeys.OWNER)
                     .filter(Player.class::isInstance)
                     .map(Player.class::cast)
