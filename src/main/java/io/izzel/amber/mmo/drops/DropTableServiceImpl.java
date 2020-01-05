@@ -114,6 +114,7 @@ class DropTableServiceImpl implements DropTableService {
             event.registerDropTriggerType("block-break", BlockBreakTrigger.class, new BlockBreakTrigger.Serializer());
             event.registerDropTriggerType("entity-kill", EntityKillTrigger.class, new EntityKillTrigger.Serializer());
             event.registerDropTriggerType("fishing", FishingTrigger.class, new FishingTrigger.Serializer());
+            event.registerDropTriggerType("lay-egg", ChickenLayEggTrigger.class, new ChickenLayEggTrigger.Serializer());
         });
         game.getEventManager().registerListener(container, RespawnPlayerEvent.class, event -> {
             event.getOriginalPlayer().get(DropPlayerData.Mutable.class).ifPresent(mutable -> {
