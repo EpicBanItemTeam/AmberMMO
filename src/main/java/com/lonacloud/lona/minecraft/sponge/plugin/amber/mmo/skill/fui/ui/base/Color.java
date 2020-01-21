@@ -7,18 +7,18 @@ public class Color {
         this.color = color;
     }
 
-    public enum Color {
-        RED(new com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color(0x00ff0000)),
-        GREEN(new com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color(0x0000ff00)),
-        BLUE(new com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color(0x000000ff)),
+    public enum ColorType {
+        RED(new Color(0x00ff0000)),
+        GREEN(new Color(0x0000ff00)),
+        BLUE(new Color(0x000000ff)),
         ;
-        protected com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color color;
+        protected Color color;
 
-        Color(com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color color) {
+        ColorType(Color color) {
             this.color = color;
         }
 
-        public com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Color getColor() {
+        public Color getColor() {
             return color;
         }
     }
