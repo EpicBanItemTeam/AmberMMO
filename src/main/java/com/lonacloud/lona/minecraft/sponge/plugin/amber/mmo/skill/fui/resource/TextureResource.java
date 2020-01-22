@@ -1,4 +1,4 @@
-package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.resource;
+package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.resource;
 
 public class TextureResource extends ResourceBase {
     protected int u, v, width, height;

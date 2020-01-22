@@ -1,6 +1,6 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component;
 
-import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.resource.TextureResource;
+import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.resource.TextureResource;
 
 public class TextureComponent extends ComponentBase {
     protected TextureResource textureResource;
