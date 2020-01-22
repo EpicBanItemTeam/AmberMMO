@@ -1,32 +1,34 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui;
 
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.PositionComponent;
+import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Size;
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.ColorfulStringComponent;
 
-import java.util.List;
+import java.util.Stack;
 
-public class GuiHud {
-    protected List<GuiValueBar> valueBarList;
-    protected List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList;
+public class GuiHud extends GuiBase{
+    protected Stack<PositionComponent<GuiValueBar>> valueBarPositionComponents;
+    protected PositionComponent<ColorfulStringComponent> hudTitlePositionComponent;
 
-    public GuiHud(List<GuiValueBar> valueBarList, List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList) {
-        this.valueBarList = valueBarList;
-        this.stringPositionComponentList = stringPositionComponentList;
+    public GuiHud(boolean shouldShow, Size size, Stack<PositionComponent<GuiValueBar>> valueBarPositionComponents, PositionComponent<ColorfulStringComponent> hudTitlePositionComponent) {
+        super(shouldShow, size);
+        this.valueBarPositionComponents = valueBarPositionComponents;
+        this.hudTitlePositionComponent = hudTitlePositionComponent;
     }
 
-    public List<GuiValueBar> getValueBarList() {
-        return valueBarList;
+    public Stack<PositionComponent<GuiValueBar>> getValueBarPositionComponents() {
+        return valueBarPositionComponents;
     }
 
-    public void setValueBarList(List<GuiValueBar> valueBarList) {
-        this.valueBarList = valueBarList;
+    public void setValueBarPositionComponents(Stack<PositionComponent<GuiValueBar>> valueBarPositionComponents) {
+        this.valueBarPositionComponents = valueBarPositionComponents;
     }
 
-    public List<PositionComponent<ColorfulStringComponent>> getStringPositionComponentList() {
-        return stringPositionComponentList;
+    public PositionComponent<ColorfulStringComponent> getHudTitlePositionComponent() {
+        return hudTitlePositionComponent;
     }
 
-    public void setStringPositionComponentList(List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList) {
-        this.stringPositionComponentList = stringPositionComponentList;
+    public void setHudTitlePositionComponent(PositionComponent<ColorfulStringComponent> hudTitlePositionComponent) {
+        this.hudTitlePositionComponent = hudTitlePositionComponent;
     }
 }

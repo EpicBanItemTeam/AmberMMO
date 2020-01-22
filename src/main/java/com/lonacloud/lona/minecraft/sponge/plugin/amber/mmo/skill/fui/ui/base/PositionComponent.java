@@ -1,6 +1,6 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base;
 
-import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.IGuiComponent;
+import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.IGuiComponent;
 
 public class PositionComponent<T extends IGuiComponent> {
     protected Position position;

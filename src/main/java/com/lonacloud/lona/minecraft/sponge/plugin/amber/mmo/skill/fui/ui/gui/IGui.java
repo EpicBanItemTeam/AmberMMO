@@ -1,6 +1,7 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui;
 
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.PositionComponent;
+import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.IGuiComponent;
 
 import java.util.Stack;
 
