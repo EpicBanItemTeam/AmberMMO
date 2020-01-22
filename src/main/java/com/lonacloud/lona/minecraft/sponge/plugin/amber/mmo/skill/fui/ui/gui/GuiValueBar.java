@@ -5,17 +5,24 @@ import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.com
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.ColorfulStringComponent;
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.TextureComponent;
 
-import java.util.List;
 
 public class GuiValueBar extends GuiBase {
     protected PositionComponent<TextureComponent> backgroundTexturePositionComponent;//背景纹理
     protected PositionComponent<BarValueComponent> barValuePositionComponent;
-    protected List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList;
+    protected PositionComponent<ColorfulStringComponent> barComponent;
 
-    public GuiValueBar(boolean shouldShow, Size size, PositionComponent<BarValueComponent> barValuePositionComponent, List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList) {
+    public GuiValueBar(boolean shouldShow, Size size, PositionComponent<TextureComponent> backgroundTexturePositionComponent, PositionComponent<BarValueComponent> barValuePositionComponent) {
         super(shouldShow, size);
+        this.backgroundTexturePositionComponent = backgroundTexturePositionComponent;
         this.barValuePositionComponent = barValuePositionComponent;
-        this.stringPositionComponentList = stringPositionComponentList;
+    }
+
+    public PositionComponent<TextureComponent> getBackgroundTexturePositionComponent() {
+        return backgroundTexturePositionComponent;
+    }
+
+    public void setBackgroundTexturePositionComponent(PositionComponent<TextureComponent> backgroundTexturePositionComponent) {
+        this.backgroundTexturePositionComponent = backgroundTexturePositionComponent;
     }
 
     public PositionComponent<BarValueComponent> getBarValuePositionComponent() {
@@ -24,13 +31,5 @@ public class GuiValueBar extends GuiBase {
 
     public void setBarValuePositionComponent(PositionComponent<BarValueComponent> barValuePositionComponent) {
         this.barValuePositionComponent = barValuePositionComponent;
-    }
-
-    public List<PositionComponent<ColorfulStringComponent>> getStringPositionComponentList() {
-        return stringPositionComponentList;
-    }
-
-    public void setStringPositionComponentList(List<PositionComponent<ColorfulStringComponent>> stringPositionComponentList) {
-        this.stringPositionComponentList = stringPositionComponentList;
     }
 }

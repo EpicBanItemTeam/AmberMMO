@@ -1,17 +1,16 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component;
 
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.BarValue;
-import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.resource.Texture;
 
 public class BarValueComponent extends ComponentBase {
     protected BarValue value;
-    protected Texture texture;
+    protected TextureComponent textureComponent;
     protected int height;
 
-    public BarValueComponent(boolean shouldShow, BarValue value, Texture texture, int height) {
+    public BarValueComponent(boolean shouldShow, BarValue value, TextureComponent textureComponent, int height) {
         super(shouldShow);
         this.value = value;
-        this.texture = texture;
+        this.textureComponent = textureComponent;
         this.height = height;
     }
 
@@ -23,12 +22,12 @@ public class BarValueComponent extends ComponentBase {
         this.value = value;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public TextureComponent getTextureComponent() {
+        return textureComponent;
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+    public void setTextureComponent(TextureComponent textureComponent) {
+        this.textureComponent = textureComponent;
     }
 
     public int getHeight() {
