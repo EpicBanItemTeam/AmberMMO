@@ -1,19 +1,14 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.resource;
 
-public class TextureResource {
-    protected DataLocation dataLocation;
+public class TextureResource extends ResourceBase {
     protected int u, v, width, height;
 
     public TextureResource(DataLocation dataLocation, int u, int v, int width, int height) {
-        this.dataLocation = dataLocation;
+        super(dataLocation);
         this.u = u;
         this.v = v;
         this.width = width;
         this.height = height;
-    }
-
-    public DataLocation getDataLocation() {
-        return dataLocation;
     }
 
     public void setDataLocation(DataLocation dataLocation) {
