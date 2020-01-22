@@ -2,11 +2,11 @@ package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base;
 
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.IGuiComponent;
 
-public class PositionComponent {
+public class PositionComponent<T extends IGuiComponent> {
     protected Position position;
-    protected IGuiComponent component;
+    protected T component;
 
-    public PositionComponent(Position position, IGuiComponent component) {
+    public PositionComponent(Position position, T component) {
         this.position = position;
         this.component = component;
     }
@@ -15,7 +15,7 @@ public class PositionComponent {
         return position;
     }
 
-    public IGuiComponent getComponent() {
+    public T getComponent() {
         return component;
     }
 
@@ -23,7 +23,7 @@ public class PositionComponent {
         this.position = position;
     }
 
-    public void setComponent(IGuiComponent component) {
+    public void setComponent(T component) {
         this.component = component;
     }
 }

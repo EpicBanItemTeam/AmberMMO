@@ -1,6 +1,7 @@
 package com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui;
 
 import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.base.Size;
+import com.lonacloud.lona.minecraft.sponge.plugin.amber.mmo.skill.fui.ui.gui.component.ComponentBase;
 
 public abstract class GuiBase extends ComponentBase implements IGui {
     protected Size size;
