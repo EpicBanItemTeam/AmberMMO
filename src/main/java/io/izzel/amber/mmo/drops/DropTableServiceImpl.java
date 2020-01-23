@@ -48,7 +48,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.DoubleUnaryOperator;
 
-@SuppressWarnings({"unchecked", "DuplicatedCode"})
+@SuppressWarnings("unchecked")
 @Singleton
 class DropTableServiceImpl implements DropTableService {
 
@@ -124,6 +124,56 @@ class DropTableServiceImpl implements DropTableService {
     }
 
     @Override
+    public void reloadDrops(CommandSource source) throws Exception {
+        for (DropRule rule : this.rules.values()) {
+            rule.getTriggers().forEach(DropTrigger::unset);
+        }
+        loadFolder(droptableFolder, TypeToken.of(DropTable.class), this.tables);
+        loadFolder(rulesFolder, TypeToken.of(DropRule.class), this.rules);
+        Task.builder().delayTicks(1).execute(() -> {
+            for (DropRule rule : this.rules.values()) {
+                for (DropTrigger trigger : rule.getTriggers()) {
+                    trigger.set(rule::apply);
+                }
+            }
+        }).submit(container);
+        locale.to(source, "drops.command.reload.success", tables.size(), rules.size());
+    }
+
+    private <T> void loadFolder(Path folder, TypeToken<T> token, Map<String, T> dist) throws Exception {
+        dist.clear();
+        if (!Files.exists(folder)) Files.createDirectories(folder);
+        val iterator= Files.walk(folder).iterator();
+        while (iterator.hasNext()) {
+            Path path = iterator.next();
+            if (!Files.isDirectory(path)) {
+                Map<String, T> load = loadFile(path, token);
+                dist.putAll(load);
+            }
+        }
+    }
+
+    private <T> Map<String, T> loadFile(Path path, TypeToken<T> token) throws Exception {
+        Map<String, T> map = Maps.newHashMap();
+        ConfigurationOptions options = ConfigurationOptions.defaults().setSerializers(internalCol);
+        CommentedConfigurationNode node = HoconConfigurationLoader.builder().setPath(path).build().load(options);
+        for (val entry : node.getChildrenMap().entrySet()) {
+            try {
+                T instance = entry.getValue().getValue(token);
+                map.put(entry.getKey().toString(), instance);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                if (token.getType().equals(DropTable.class)) {
+                    locale.log("drops.load.table-error", path, entry.getKey(), e);
+                } else if (token.getType().equals(DropRule.class)) {
+                    locale.log("drops.load.rule-error", path, entry.getKey(), e);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public <T extends DropTable> Class<T> getDropTableTypeById(String id) {
         return (Class<T>) dropTableTypes.get(id);
     }
@@ -149,41 +199,6 @@ class DropTableServiceImpl implements DropTableService {
     }
 
     @Override
-    public void reloadDrops(CommandSource source) throws Exception {
-        for (DropRule rule : this.rules.values()) {
-            rule.getTriggers().forEach(DropTrigger::unset);
-        }
-        this.tables.clear();
-        this.rules.clear();
-        if (!Files.exists(droptableFolder)) Files.createDirectories(droptableFolder);
-        if (!Files.exists(rulesFolder)) Files.createDirectories(rulesFolder);
-        val tableItr = Files.walk(droptableFolder).iterator();
-        while (tableItr.hasNext()) {
-            Path path = tableItr.next();
-            if (!Files.isDirectory(path)) {
-                Map<String, DropTable> load = load(path, TypeToken.of(DropTable.class));
-                this.tables.putAll(load);
-            }
-        }
-        val ruleItr = Files.walk(rulesFolder).iterator();
-        while (ruleItr.hasNext()) {
-            Path path = ruleItr.next();
-            if (!Files.isDirectory(path)) {
-                Map<String, DropRule> load = load(path, TypeToken.of(DropRule.class));
-                this.rules.putAll(load);
-            }
-        }
-        Task.builder().delayTicks(1).execute(() -> {
-            for (DropRule rule : this.rules.values()) {
-                for (DropTrigger trigger : rule.getTriggers()) {
-                    trigger.set(rule::apply);
-                }
-            }
-        }).submit(container);
-        locale.to(source, "drops.command.reload.success", tables.size(), rules.size());
-    }
-
-    @Override
     public void addModifier(Entity entity, String amount, AmountTempModifier modifier) {
         DropPlayerData.addModifier(entity, amount, modifier);
     }
@@ -196,26 +211,6 @@ class DropTableServiceImpl implements DropTableService {
     @Override
     public DropItemProcessor getDropItemProcessor() {
         return processor;
-    }
-
-    private <T> Map<String, T> load(Path path, TypeToken<T> token) throws Exception {
-        Map<String, T> map = Maps.newHashMap();
-        ConfigurationOptions options = ConfigurationOptions.defaults().setSerializers(internalCol);
-        CommentedConfigurationNode node = HoconConfigurationLoader.builder().setPath(path).build().load(options);
-        for (val entry : node.getChildrenMap().entrySet()) {
-            try {
-                T instance = entry.getValue().getValue(token);
-                map.put(entry.getKey().toString(), instance);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                if (token.getType().equals(DropTable.class)) {
-                    locale.log("drops.load.table-error", path, entry.getKey(), e);
-                } else if (token.getType().equals(DropRule.class)) {
-                    locale.log("drops.load.rule-error", path, entry.getKey(), e);
-                }
-            }
-        }
-        return map;
     }
 
     @NonnullByDefault
