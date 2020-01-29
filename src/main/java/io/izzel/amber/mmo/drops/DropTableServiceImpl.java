@@ -1,5 +1,6 @@
 package io.izzel.amber.mmo.drops;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -160,6 +161,7 @@ class DropTableServiceImpl implements DropTableService {
         for (val entry : node.getChildrenMap().entrySet()) {
             try {
                 T instance = entry.getValue().getValue(token);
+                Preconditions.checkNotNull(instance);
                 map.put(entry.getKey().toString(), instance);
             } catch (Throwable e) {
                 e.printStackTrace();
